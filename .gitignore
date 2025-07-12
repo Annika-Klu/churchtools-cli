@@ -1,0 +1,9 @@
+*.ps1xml
+*.tmp
+*.user
+*.cache
+*.env
+!.env.example
+
+/logs
+*.log
