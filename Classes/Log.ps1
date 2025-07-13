@@ -6,7 +6,6 @@ class Log {
     Log([string]$Name, [string]$LogsPath) {
         $this.Name = $Name
 
-        Write-Host $LogsPath
         if ([string]::IsNullOrEmpty($LogsPath)) {
             $this.LogsPath = "./logs"
         } else {
