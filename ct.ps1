@@ -39,15 +39,15 @@ try {
         exit 1
     }
 
-    $subScript = Join-Path $commandsDir "$Command.ps1"
+    $subScript = Get-ChildItem -Path $commandsDir -Filter "$Command.ps1" -Recurse | Select-Object -First 1
 
-    if (-not (Test-Path $subScript)) {
+    if ($subScript) {
+        . $subScript.FullName @($Args)
+    } else {
         Write-Host "Befehl '$Command' wurde nicht gefunden.`n"
         Show-Help
         exit 1
     }
-
-    & $subScript @($Args)
 
     exit 0
 } catch {
