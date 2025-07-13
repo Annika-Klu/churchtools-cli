@@ -28,3 +28,5 @@ function Get-AllowedCommands {
 
     return $allowedCommands
 }
+
+Export-ModuleMember -Function Get-AllowedCommands
