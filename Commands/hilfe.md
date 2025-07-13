@@ -1,0 +1,1 @@
+Übersicht aller Befehle, die dem authentifizierten Nutzer zur Verfügung stehen.
