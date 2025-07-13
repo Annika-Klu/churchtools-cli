@@ -1,6 +1,3 @@
-$homeDir = $env:USERPROFILE
-$outputPath = "$homeDir\Desktop"
-
 $ct = [ChurchTools]::new($CT_API_URL, $CT_API_TOKEN)
 $toast = [Toast]::new()
 
@@ -37,7 +34,7 @@ try {
     if (-not $fileData) {
         return
     }
-    $ct.CallApi("GET", $fileData.pptUrl, "$OUTPUT_PATH\$($fileData.pptName)")
+    $ct.CallApi("GET", $fileData.pptUrl, "$OUT_DIR\$($fileData.pptName)")
     $toast.Show("info", "$($fileData.eventName) - Datei", "'$($fileData.pptName)' erfolgreich heruntergeladen")
 } catch {
    $toast.Show("error", "PowerPoint-Download", $_)

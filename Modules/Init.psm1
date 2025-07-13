@@ -45,6 +45,23 @@ function Set-ApiToken {
     return $token
 }
 
+function Set-OutDir {
+    $suggestedOutDir = "$($env:USERPROFILE)\Documents"
+    do {
+        $selectedOutDir = Read-Host "Wo sollen heruntergeladene oder generierte Dateien gespeichert werden? (Ohne Eingabe bestätigen für '$suggestedOutDir')"
+        if (-not $selectedOutDir) {
+            return $suggestedOutDir
+        }
+        if (Test-Path $pfad) {
+            $isValid = $true
+        } else {
+            Write-Host "Ungültiger Pfad."
+            $isValid = $false
+        }
+    } until ($isValid)
+    return $selectedOutDir
+}
+
 function Set-CliEnv {
     param(
         [string]$EnvPath
@@ -52,5 +69,6 @@ function Set-CliEnv {
     $envVars = @{}
     $envVars["CT_API_URL"] = Set-ApiUrl
     $envVars["CT_API_TOKEN"] = Set-ApiToken -ApiUrl $envVars["CT_API_URL"]
+    $envVars["OUT_DIR"] = Set-OutDir
     Update-DotEnv -EnvPath $EnvPath -KeyValuePairs $envVars
 }
