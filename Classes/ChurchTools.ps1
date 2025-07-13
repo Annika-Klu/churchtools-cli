@@ -47,13 +47,14 @@ class ChurchTools {
             $this.User = Get-Content $this.CachePath -Raw | ConvertFrom-Json
         } else {
             try {
+                Write-Host "Lade Nutzerdaten..."
                 $userData = $this.CallApi("GET", "whoami", $null, $null)
                 $groups = $this.CallApi("GET", "persons/$($userData.id)/groups", $null, $null)
                 $this.User = [PSCustomObject]@{
                     firstName   = $userData.firstName
                     lastName = $userData.lastName
                     email  = $userData.email
-                    groups = $groups.data | ForEach-Object { $_.id }
+                    groups = $groups | ForEach-Object { $_.group.domainIdentifier }
                 }
                 $this.CacheUserData()
             } catch {
