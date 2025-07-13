@@ -1,10 +1,12 @@
 class ChurchTools {
     [string]$BaseUrl
     [object]$Headers
+    [pscustomobject]$User
 
     ChurchTools([string]$baseUrl, [string]$token) {
         $this.BaseUrl = $baseUrl.TrimEnd("/")
         $this.Headers = @{ Authorization = "Login $($token)" }
+        $this.User = $this.CallApi("GET", "whoami", $null)
     }
 
     [object] CallApi([string]$Method, [string]$Path, [string]$OutFile) {
