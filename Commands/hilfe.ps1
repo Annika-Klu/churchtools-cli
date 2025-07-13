@@ -1,8 +1,9 @@
 function Show-Help {
     Write-Host "Verfügbare Befehle:`n"
 
-    $allCommands = Get-ChildItem -Path $PSScriptRoot -Filter *.ps1 -Recurse
-    $groups = $allCommands | Group-Object DirectoryName | Sort-Object Name
+    $allowedCommands = Get-AllowedCommands
+    $groups = $allowedCommands | Group-Object DirectoryName | Sort-Object Name
+
     foreach ($group in $groups) {
         $relativePath = $group.Name.Substring($PSScriptRoot.Length).TrimStart('\','/')
 
