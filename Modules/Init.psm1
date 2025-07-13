@@ -66,9 +66,13 @@ function Set-CliEnv {
     param(
         [string]$EnvPath
     )
+    Write-Host "Willkommen zum Churchtools-CLI!"
     $envVars = @{}
     $envVars["CT_API_URL"] = Set-ApiUrl
     $envVars["CT_API_TOKEN"] = Set-ApiToken -ApiUrl $envVars["CT_API_URL"]
     $envVars["OUT_DIR"] = Set-OutDir
     Update-DotEnv -EnvPath $EnvPath -KeyValuePairs $envVars
+    Write-Host "Danke für deine Angaben! Das CLI ist jetzt fertig konfiguriert."
 }
+
+Export-ModuleMember -Function Set-CliEnv
