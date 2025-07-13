@@ -14,7 +14,7 @@ if (-not (Test-Path $envPath)) {
 
 Get-DotEnv -Path $envPath
 
-$log = [Log]::new("ct", $null)
+$log = [Log]::new("ct")
 
 function Show-Help {
     Write-Host "Verfügbare Befehle:`n"
@@ -36,7 +36,7 @@ function Show-Help {
     Write-Host "`nBenutzung: meinclient <Befehl> [Argumente]"
 }
 
-try {    
+try {
     $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
     $commandsDir = Join-Path $scriptDir "Commands"
 
