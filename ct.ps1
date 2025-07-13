@@ -20,7 +20,6 @@ try {
     log.Write("UTF-8 encoding could not be set: $_")
 }
 
-
 $envPath = Join-Path $PSScriptRoot ".env"
 if (-not (Test-Path $envPath)) {
     New-Item -Path $envPath -ItemType File -Force | Out-Null
@@ -29,32 +28,13 @@ if (-not (Test-Path $envPath)) {
 
 Get-DotEnv -Path $envPath
 
-function Show-Help {
-    Write-Host "Verfügbare Befehle:`n"
-
-    Get-ChildItem -Path $commandsDir -Filter *.ps1 | ForEach-Object {
-        $name = $_.BaseName
-        $descFile = $_.FullName -replace "\.ps1$", ".md"
-
-        if (Test-Path $descFile) {
-            $desc = Get-Content $descFile -Raw
-            $firstLine = $desc -split "`n" | Select-Object -First 1
-        } else {
-            $firstLine = "(Keine Beschreibung)"
-        }
-
-        Write-Host ("- {0}`t{1}" -f $name, $firstLine)
-    }
-
-    Write-Host "`nBenutzung: meinclient <Befehl> [Argumente]"
-}
-
 try {
     $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
     $commandsDir = Join-Path $scriptDir "Commands"
 
     if (-not $Command) {
-        Write-Host "Kein Befehl angegeben."
+        Write-Host "Kein Befehl angegeben. Benutzung:`nct <Befehl>`nDann mit der Eingabetaste bestätigen."
+        Write-Host "Mit 'ct hilfe' kannst du verfügbare Befehle anzeigen lassen."
         Show-Help
         exit 1
     }
@@ -67,7 +47,6 @@ try {
         exit 1
     }
 
-    Write-Host "Starte '$Command' ..."
     & $subScript @($Args)
 
     exit 0
