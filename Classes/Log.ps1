@@ -3,16 +3,9 @@ class Log {
     [string]$LogsPath
     [string]$FullPath
 
-    Log([string]$Name, [string]$LogsPath) {
+    Log([string]$Name) {
         $this.Name = $Name
-
-        Write-Host $LogsPath
-        if ([string]::IsNullOrEmpty($LogsPath)) {
-            $this.LogsPath = "./logs"
-        } else {
-            $this.LogsPath = $LogsPath
-        }
-
+        $this.LogsPath = "$PSScriptRoot\..\logs"
         if (-not (Test-Path $this.LogsPath)) {
             New-Item -ItemType Directory -Path $this.LogsPath | Out-Null
         }

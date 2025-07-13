@@ -1,23 +1,3 @@
-# $classesPath = Join-Path $PSScriptRoot '..\Classes'
-# Get-ChildItem -Path $classesPath -Filter *.ps1 | ForEach-Object {
-#     . $_.FullName
-# }
-
-# $modulesPath = Join-Path $PSScriptRoot '..\Modules'
-# Get-ChildItem -Path $modulesPath -Filter *.psm1 -Recurse | ForEach-Object {
-#     Import-Module $_.FullName -Force
-# }
-
-# $envPath = Join-Path $PSScriptRoot "..\.env"
-# Get-DotEnv -Path $envPath
-# Obiges ggf. in loadRequirements und die immer dot sourcen
-
-#$scriptName = Split-Path -Leaf $MyInvocation.MyCommand.Definition
-#Write-Host "Dieses Skript heißt: $scriptName"
-
-$homeDir = $env:USERPROFILE
-$outputPath = "$homeDir\Desktop"
-
 $ct = [ChurchTools]::new($CT_API_URL, $CT_API_TOKEN)
 $toast = [Toast]::new()
 
@@ -54,7 +34,7 @@ try {
     if (-not $fileData) {
         return
     }
-    $ct.CallApi("GET", $fileData.pptUrl, "$OUTPUT_PATH\$($fileData.pptName)")
+    $ct.CallApi("GET", $fileData.pptUrl, "$OUT_DIR\$($fileData.pptName)")
     $toast.Show("info", "$($fileData.eventName) - Datei", "'$($fileData.pptName)' erfolgreich heruntergeladen")
 } catch {
    $toast.Show("error", "PowerPoint-Download", $_)
