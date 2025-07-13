@@ -1,0 +1,61 @@
+# $classesPath = Join-Path $PSScriptRoot '..\Classes'
+# Get-ChildItem -Path $classesPath -Filter *.ps1 | ForEach-Object {
+#     . $_.FullName
+# }
+
+# $modulesPath = Join-Path $PSScriptRoot '..\Modules'
+# Get-ChildItem -Path $modulesPath -Filter *.psm1 -Recurse | ForEach-Object {
+#     Import-Module $_.FullName -Force
+# }
+
+# $envPath = Join-Path $PSScriptRoot "..\.env"
+# Get-DotEnv -Path $envPath
+# Obiges ggf. in loadRequirements und die immer dot sourcen
+
+#$scriptName = Split-Path -Leaf $MyInvocation.MyCommand.Definition
+#Write-Host "Dieses Skript heißt: $scriptName"
+
+$homeDir = $env:USERPROFILE
+$outputPath = "$homeDir\Desktop"
+
+$ct = [ChurchTools]::new($CT_API_URL, $CT_API_TOKEN)
+$toast = [Toast]::new()
+
+function Get-PowerPoint {
+    param(
+        [DateTime]$today
+    )
+    $eventsUrl = "events?direction=forward&limit=1&include=eventServices&from=$($today.ToString("yyyy-MM-dd"))&page=1"
+    $data = $ct.CallApi("GET", $eventsUrl, $null)
+    $eventStart = Get-Date -Date $data.startDate
+
+    if ($eventStart.Date -gt $today.Date) {
+        throw "Zu heute ist keine Veranstaltung in Churchtools geplant. Keine Datei heruntergeladen."
+    }
+    if (-not $data.eventFiles) {
+        throw "$($data.name): Keine Dateien gefunden"
+    }
+    $pptx = $data.eventFiles | Where-Object { $_.title -like "*.pptx*" }
+    if (-not $pptx) {
+        throw "$($data.name): Keine PowerPoint-Datei gefunden"
+    }
+    return @{
+        eventName = $data.name
+        pptName = $pptx.title
+        pptUrl = $pptx.frontendUrl
+    }
+}
+
+
+try {
+    $today = Get-Date
+
+    $fileData = Get-PowerPoint -today $today
+    if (-not $fileData) {
+        return
+    }
+    $ct.CallApi("GET", $fileData.pptUrl, "$OUTPUT_PATH\$($fileData.pptName)")
+    $toast.Show("info", "$($fileData.eventName) - Datei", "'$($fileData.pptName)' erfolgreich heruntergeladen")
+} catch {
+   $toast.Show("error", "PowerPoint-Download", $_)
+}
