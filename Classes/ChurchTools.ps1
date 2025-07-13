@@ -2,11 +2,38 @@ class ChurchTools {
     [string]$BaseUrl
     [object]$Headers
     [pscustomobject]$User
+    [string]$CachePath
 
     ChurchTools([string]$baseUrl, [string]$token) {
         $this.BaseUrl = $baseUrl.TrimEnd("/")
         $this.Headers = @{ Authorization = "Login $($token)" }
-        $this.User = $this.CallApi("GET", "whoami", $null)
+        $this.CachePath = "$PSScriptRoot\..\.usercache.json"
+        $this.LoadUserData()
+    }
+
+    [void] LoadUserData() {
+        if (Test-Path -Path $this.CachePath) {
+            $this.User = Get-Content $this.CachePath -Raw | ConvertFrom-Json
+        } else {
+            try {
+                $userData = $this.CallApi("GET", "whoami", $null)
+                $groups = $this.CallApi("GET", "persons/$($userData.id)/groups", $null)
+                $this.User = [PSCustomObject]@{
+                    firstName   = $userData.firstName
+                    lastName = $userData.lastName
+                    email  = $userData.email
+                    groups = $groups.data | ForEach-Object { $_.id }
+                }
+                $this.CacheUserData()
+            } catch {
+                Write-Warning "Nutzerdaten konnten nicht abgefragt werden."
+                throw "Could not load user data: $_"
+            }
+        }
+    }
+
+    [void] CacheUserData() {
+        $this.User | ConvertTo-Json | Set-Content -Path $this.CachePath
     }
 
     [object] CallApi([string]$Method, [string]$Path, [string]$OutFile) {
