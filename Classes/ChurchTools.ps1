@@ -67,4 +67,16 @@ class ChurchTools {
     [void] CacheUserData() {
         $this.User | ConvertTo-Json | Set-Content -Path $this.CachePath
     }
+
+    [bool] UserHasAccess([string[]]$allowedGroups) {
+        if (-not $this.User -or -not $this.User.groups) {
+            return $false
+        }
+        foreach ($group in $AllowedGroups) {
+            if ($this.User.Groups -contains $group) {
+                return $true
+            }
+        }
+        return $false
+    }
 }
