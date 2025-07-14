@@ -50,8 +50,10 @@ jobs:
 
       - name: Copy installer exe to public repo
         run: |
-          New-Item -ItemType Directory -Path "public-repo/installer" -Force
-          Copy-Item "installer/ct-installer.exe" "public-repo/installer/ct-installer.exe" -Force
+          if (!(Test-Path "public-repo/installer")) {
+            New-Item -ItemType Directory -Path "public-repo/installer" -Force
+          }
+          Copy-Item "installer/ct-installer.exe" "public-repo/installer/ct-cli.exe" -Force
 
       - name: Commit & Push to public repo (branch installer)
         working-directory: public-repo
