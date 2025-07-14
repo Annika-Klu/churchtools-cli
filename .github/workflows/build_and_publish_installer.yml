@@ -5,6 +5,7 @@ on:
     branches:
       - feature-add-installer
     paths:
+      - '.github/workflows/build_and_publish_installer.yml'
       - 'installer/**'
 
 env:
