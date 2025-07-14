@@ -38,7 +38,7 @@ jobs:
         shell: pwsh
         run: |
           Import-Module ps2exe
-          ps2exe -inputFile "installer/installer.ps1" -outputFile "installer/ct-installer.exe" -noConsole -force
+          ps2exe -inputFile "installer/installer.ps1" -outputFile "installer/ct-installer.exe" -noConsole
 
       - name: Checkout public repo
         uses: actions/checkout@v3
