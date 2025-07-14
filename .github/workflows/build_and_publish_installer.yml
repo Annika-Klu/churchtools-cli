@@ -3,7 +3,7 @@ name: Build and Publish Installer
 on:
   push:
     branches:
-      - feature-add-installer
+      - master
     paths:
       - '.github/workflows/build_and_publish_installer.yml'
       - 'installer/**'
@@ -57,10 +57,14 @@ jobs:
 
       - name: Commit & Push to public repo (branch installer)
         working-directory: public-repo
+        shell: pwsh
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git checkout -B installer origin/installer
           git add installer/ct-cli.exe
-          git commit -m "Update installer exe"
-          git push -u origin installer --force
+          if (git diff-index --quiet HEAD) {
+            Write-Host "No changes to commit"
+          } else {
+            git commit -m "Update installer exe"
+            git push origin master
+          }
