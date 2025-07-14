@@ -1,0 +1,58 @@
+name: Build and Publish Installer
+
+on:
+  push:
+    branches:
+      - feature-add-installer
+    paths:
+      - 'installer/**'
+
+env:
+  ZIP_URL: ${{ vars.ZIP_URL }}
+
+jobs:
+  build-installer:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout private repo
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Create installer script
+        run: |
+          (Get-Content installer/installer.template.ps1 -Encoding UTF8) -replace '__ZIP_URL__', '${{ vars.installer.ZIP_URL }}' | Set-Content installer/installer.ps1 -Encoding UTF8
+
+      - name: Install ps2exe module
+        shell: pwsh
+        run: |
+          Install-Module -Name ps2exe -Scope CurrentUser -Force
+
+      - name: Compile installer.ps1 to exe
+        shell: pwsh
+        run: |
+          Import-Module ps2exe
+          ps2exe -inputFile "installer/installer.ps1" -outputFile "installer/ct-installer.exe" -noConsole -force
+
+      - name: Checkout public repo
+        uses: actions/checkout@v3
+        with:
+          repository: Annika-Klu/ct-cli-files
+          token: ${{ secrets.CT_CLI_FILES_TOKEN }}
+          path: public-repo
+          fetch-depth: 0
+
+      - name: Copy installer exe to public repo
+        run: |
+          Copy-Item "installer/ct-installer.exe" "public-repo/installer/ct-installer.exe" -Force
+
+      - name: Commit & Push to public repo (branch: installer)
+        working-directory: public-repo
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -B installer origin/installer
+          git add installer/ct-installer.exe
+          git commit -m "Update installer exe from private repo"
+          git push -u origin installer --force
