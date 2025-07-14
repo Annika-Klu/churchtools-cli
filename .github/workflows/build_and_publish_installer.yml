@@ -47,7 +47,7 @@ jobs:
         run: |
           Copy-Item "installer/ct-installer.exe" "public-repo/installer/ct-installer.exe" -Force
 
-      - name: Commit & Push to public repo (branch: installer)
+      - name: Commit & Push to public repo (branch installer)
         working-directory: public-repo
         run: |
           git config user.name "github-actions[bot]"
