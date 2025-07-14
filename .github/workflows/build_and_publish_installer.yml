@@ -38,7 +38,7 @@ jobs:
         shell: pwsh
         run: |
           Import-Module ps2exe
-          ps2exe -inputFile "installer/installer.ps1" -outputFile "installer/ct-installer.exe" -noConsole
+          ps2exe -inputFile "installer/installer.ps1" -outputFile "installer/ct-cli.exe" -noConsole
 
       - name: Checkout public repo
         uses: actions/checkout@v3
@@ -53,7 +53,7 @@ jobs:
           if (!(Test-Path "public-repo/installer")) {
             New-Item -ItemType Directory -Path "public-repo/installer" -Force
           }
-          Copy-Item "installer/ct-installer.exe" "public-repo/installer/ct-cli.exe" -Force
+          Copy-Item "installer/ct-cli.exe" "public-repo/installer/ct-cli.exe" -Force
 
       - name: Commit & Push to public repo (branch installer)
         working-directory: public-repo
@@ -61,6 +61,6 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git checkout -B installer origin/installer
-          git add installer/ct-installer.exe
+          git add installer/ct-cli.exe
           git commit -m "Update installer exe"
           git push -u origin installer --force
