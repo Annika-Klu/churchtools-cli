@@ -50,6 +50,7 @@ jobs:
 
       - name: Copy installer exe to public repo
         run: |
+          New-Item -ItemType Directory -Path "public-repo/installer" -Force
           Copy-Item "installer/ct-installer.exe" "public-repo/installer/ct-installer.exe" -Force
 
       - name: Commit & Push to public repo (branch installer)
@@ -59,5 +60,5 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git checkout -B installer origin/installer
           git add installer/ct-installer.exe
-          git commit -m "Update installer exe from private repo"
+          git commit -m "Update installer exe"
           git push -u origin installer --force
