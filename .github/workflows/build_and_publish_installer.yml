@@ -21,8 +21,11 @@ jobs:
           fetch-depth: 0
 
       - name: Create installer script
+        shell: pwsh
         run: |
-          (Get-Content installer/installer.template.ps1 -Encoding UTF8) -replace '__ZIP_URL__', '${{ vars.installer.ZIP_URL }}' | Set-Content installer/installer.ps1 -Encoding UTF8
+          $template = Get-Content installer/installer.template.ps1 -Encoding UTF8
+          $newContent = $template -replace '__ZIP_URL__', $env:ZIP_URL
+          $newContent | Set-Content installer/installer.ps1 -Encoding UTF8
 
       - name: Install ps2exe module
         shell: pwsh
