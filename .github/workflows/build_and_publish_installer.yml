@@ -12,6 +12,7 @@ env:
 
 jobs:
   build-installer:
+    environment: installer
     runs-on: windows-latest
 
     steps:
