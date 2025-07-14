@@ -1,0 +1,70 @@
+name: Build and Publish Installer
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - '.github/workflows/build_and_publish_installer.yml'
+      - 'installer/**'
+
+env:
+  ZIP_URL: ${{ vars.ZIP_URL }}
+
+jobs:
+  build-installer:
+    environment: installer
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout private repo
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Create installer script
+        shell: pwsh
+        run: |
+          $template = Get-Content installer/installer.template.ps1 -Encoding UTF8
+          $newContent = $template -replace '__ZIP_URL__', $env:ZIP_URL
+          $newContent | Set-Content installer/installer.ps1 -Encoding UTF8
+
+      - name: Install ps2exe module
+        shell: pwsh
+        run: |
+          Install-Module -Name ps2exe -Scope CurrentUser -Force
+
+      - name: Compile installer.ps1 to exe
+        shell: pwsh
+        run: |
+          Import-Module ps2exe
+          ps2exe -inputFile "installer/installer.ps1" -outputFile "installer/ct-cli.exe" -noConsole
+
+      - name: Checkout public repo
+        uses: actions/checkout@v3
+        with:
+          repository: Annika-Klu/ct-cli-files
+          token: ${{ secrets.CT_CLI_FILES_TOKEN }}
+          path: public-repo
+          fetch-depth: 0
+
+      - name: Copy installer exe to public repo
+        run: |
+          if (!(Test-Path "public-repo/installer")) {
+            New-Item -ItemType Directory -Path "public-repo/installer" -Force
+          }
+          Copy-Item "installer/ct-cli.exe" "public-repo/installer/ct-cli.exe" -Force
+
+      - name: Commit & Push to public repo (branch installer)
+        working-directory: public-repo
+        shell: pwsh
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add installer/ct-cli.exe
+          if (git diff-index --quiet HEAD) {
+            Write-Host "No changes to commit"
+          } else {
+            git commit -m "Update installer exe"
+            git push origin master
+          }
