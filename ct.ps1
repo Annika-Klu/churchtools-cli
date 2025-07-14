@@ -40,8 +40,13 @@ try {
     }
 
     $subScript = Get-ChildItem -Path $commandsDir -Filter "$Command.ps1" -Recurse | Select-Object -First 1
-
     if ($subScript) {
+        $allowedCommands = Get-AllowedCommands
+        $ct = [ChurchTools]::new($CT_API_URL, $CT_API_TOKEN)
+        if ($allowedCommands.FullName -notcontains $subScript.FullName) {
+            Write-Host "Du bist nicht berechtigt, diesen Befehl auszuführen."
+            throw "User $($ct.User.email) is not allowed to run command '$Command'."
+        }
         . $subScript.FullName @($Args)
     } else {
         Write-Host "Befehl '$Command' wurde nicht gefunden.`n"

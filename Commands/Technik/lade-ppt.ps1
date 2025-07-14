@@ -6,7 +6,7 @@ function Get-PowerPoint {
         [DateTime]$today
     )
     $eventsUrl = "events?direction=forward&limit=1&include=eventServices&from=$($today.ToString("yyyy-MM-dd"))&page=1"
-    $data = $ct.CallApi("GET", $eventsUrl, $null)
+    $data = $ct.CallApi("GET", $eventsUrl, $null, $null)
     $eventStart = Get-Date -Date $data.startDate
 
     if ($eventStart.Date -gt $today.Date) {
@@ -34,7 +34,7 @@ try {
     if (-not $fileData) {
         return
     }
-    $ct.CallApi("GET", $fileData.pptUrl, "$OUT_DIR\$($fileData.pptName)")
+    $ct.CallApi("GET", $fileData.pptUrl, $null, "$OUT_DIR\$($fileData.pptName)")
     $toast.Show("info", "$($fileData.eventName) - Datei", "'$($fileData.pptName)' erfolgreich heruntergeladen")
 } catch {
    $toast.Show("error", "PowerPoint-Download", $_)

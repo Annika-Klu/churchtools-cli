@@ -34,8 +34,7 @@ function Set-ApiToken {
         try {
             $token = Read-Host "Bitte gib dein API-Token ein"
             $ct = [ChurchTools]::new($ApiUrl, $token)
-            $response = $ct.CallApi("GET", "whoami", $null)
-            Write-Host "Authentifiziert als $($response.firstName) $($response.lastName)"
+            Write-Host "Authentifiziert als $($ct.User.firstName) $($ct.User.lastName)"
             $isValid = $true
         } catch {
             Write-Host "Das Token ist ungültig. $_"
