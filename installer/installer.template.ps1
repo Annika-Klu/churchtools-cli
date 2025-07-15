@@ -9,9 +9,9 @@ function Check-Compatibility {
     if ($psVersion -lt 5) {
         return "PowerShell-Version 5 oder höher erfoderlich. Aktuelle Version: $psVersion"
     }
-    $osVersion = [System.Environment]::OSVersion.Version
-
-    if ($osVersion.Major -lt 10) {
+    
+    $os = Get-CimInstance -ClassName Win32_OperatingSystem
+    if ($os.Version -lt 10) {
         return "Windows 10 oder höher erfoderlich. Aktuelles Betriebssystem: $($osVersion.ToString())"
     }
     return "OK"
