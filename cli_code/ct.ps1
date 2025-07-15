@@ -25,7 +25,7 @@ $envPath = Join-Path $PSScriptRoot ".env"
 $initFile = Join-Path $PSScriptRoot "init"
 if (Test-Path $initFile) {
     Set-CliEnv -EnvPath $envPath
-    Remove-Item $initFile
+    Remove-Item $initFile -ErrorAction SilentlyContinue
 }
 
 Get-DotEnv -Path $envPath
