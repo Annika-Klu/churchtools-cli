@@ -53,7 +53,7 @@ function Get-Form {
     )
     $form = New-Object System.Windows.Forms.Form
     $form.Icon = $icon
-    $form.Text = "Churchtools CLI $RELEASE_TAG | Installer"
+    $form.Text = "Churchtools CLI $releaseVersion | Installer"
     $form.Size = New-Object System.Drawing.Size(400,200)
 
     $label = New-Object System.Windows.Forms.Label
@@ -103,6 +103,7 @@ try {
     Set-FormText -Form $modalForm -NewText "Fertig! Das CLI ist einsatzbereit.`nÖffne Windows PowerShell und tippe ein: 'ct hilfe',`num verfügbare Befehle zu sehen.`nMöglicherweise musst du dich neu anmelden oder PowerShell neu öffnen, damit der Befehl 'ct' erkannt wird."
     $modalForm.ShowDialog()
 } catch {
+    $progressForm.Close()
     Set-FormText -Form $modalForm -NewText "Leider ist ein Fehler aufgetreten: $_"
     $modalForm.ShowDialog()
 }
