@@ -1,8 +1,12 @@
 Add-Type -AssemblyName System.Windows.Forms
 
+$releaseVersion = "__RELEASE_TAG__"
 $ZipUrl = "__ZIP_URL__"
 $ZipFile = "$env:TEMP/ct.zip"
 $InstallPath = "$env:USERPROFILE\.ct"
+
+$iconPath = Join-Path $PSScriptRoot "icon.ico"
+$icon = [System.Drawing.Icon]::ExtractAssociatedIcon($iconPath)
 
 function Check-Compatibility {
     $psVersion = $PSVersionTable.PSVersion.Major
@@ -32,9 +36,9 @@ function Add-InstallPath {
     }
 }
 
-function Set-UpdateUrlEnv {
+function Set-EnvContents {
     $EnvFile = Join-Path $InstallPath ".env"
-    $EnvContent = "UPDATE_URL=$ZipUrl"
+    $EnvContent = "UPDATE_URL=$ZipUrl`nVERSION=$releaseVersion"
     Set-Content -Path $EnvFile -Value $EnvContent -Encoding UTF8
 }
 
@@ -48,7 +52,8 @@ function Get-Form {
         [string]$InitText
     )
     $form = New-Object System.Windows.Forms.Form
-    $form.Text = "CLI Installer"
+    $form.Icon = $icon
+    $form.Text = "Churchtools CLI $RELEASE_TAG | Installer"
     $form.Size = New-Object System.Drawing.Size(400,200)
 
     $label = New-Object System.Windows.Forms.Label
@@ -88,7 +93,7 @@ try {
 
     Set-FormText -Form $progressForm -NewText "Dateien werden heruntergeladen..."
     Get-CLICode
-    Set-UpdateUrlEnv
+    Set-EnvContents
     Add-InitFlag
 
     Set-FormText -Form $progressForm -NewText  "Pfad wird zu Umgebungsvariablen hinzugefügt..."
