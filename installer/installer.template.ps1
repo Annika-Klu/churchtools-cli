@@ -30,10 +30,14 @@ function Get-CLICode {
 
 function Add-InstallPath {
     $oldPath = [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User)
-    if ($oldPath -notlike "*$InstallPath*") {
+    if ([string]::IsNullOrEmpty($oldPath)) {
+        $newPath = $InstallPath
+    } elseif ($oldPath -notlike "*$InstallPath*") {
         $newPath = "$oldPath;$InstallPath"
-        [Environment]::SetEnvironmentVariable("Path", $newPath, [EnvironmentVariableTarget]::User)
+    } else {
+        return
     }
+    [Environment]::SetEnvironmentVariable("Path", $newPath, [EnvironmentVariableTarget]::User)
 }
 
 function Set-EnvContents {
