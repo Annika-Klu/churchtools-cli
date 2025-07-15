@@ -33,12 +33,17 @@ jobs:
         shell: pwsh
         run: |
           Install-Module -Name ps2exe -Scope CurrentUser -Force
+      
+      - name: Download Icon
+        shell: pwsh
+        run: |
+          Invoke-WebRequest -Uri "https://bgh.church.tools/system/assets/ico/favicon.ico" -OutFile "installer/icon.ico"
 
       - name: Compile installer.ps1 to exe
         shell: pwsh
         run: |
           Import-Module ps2exe
-          ps2exe -inputFile "installer/installer.ps1" -outputFile "installer/ct-cli.exe" -noConsole
+          ps2exe -inputFile "installer/installer.ps1" -outputFile "installer/ct-cli.exe" -icon="installer/icon.ico" -noConsole
 
       - name: Checkout public repo
         uses: actions/checkout@v3

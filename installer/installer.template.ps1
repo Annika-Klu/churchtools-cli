@@ -9,9 +9,9 @@ function Check-Compatibility {
     if ($psVersion -lt 5) {
         return "PowerShell-Version 5 oder höher erfoderlich. Aktuelle Version: $psVersion"
     }
-    $osVersion = [System.Environment]::OSVersion.Version
-
-    if ($osVersion.Major -lt 10) {
+    
+    $os = Get-CimInstance -ClassName Win32_OperatingSystem
+    if ($os.Version -lt 10) {
         return "Windows 10 oder höher erfoderlich. Aktuelles Betriebssystem: $($osVersion.ToString())"
     }
     return "OK"
@@ -36,6 +36,11 @@ function Set-UpdateUrlEnv {
     $EnvFile = Join-Path $InstallPath ".env"
     $EnvContent = "UPDATE_URL=$ZipUrl"
     Set-Content -Path $EnvFile -Value $EnvContent -Encoding UTF8
+}
+
+function Add-InitFlag {
+    $DummyFile = Join-Path $InstallPath "init"
+    New-Item -ItemType File -Path $DummyFile | Out-Null
 }
 
 function Get-Form {
@@ -84,6 +89,7 @@ try {
     Set-FormText -Form $progressForm -NewText "Dateien werden heruntergeladen..."
     Get-CLICode
     Set-UpdateUrlEnv
+    Add-InitFlag
 
     Set-FormText -Form $progressForm -NewText  "Pfad wird zu Umgebungsvariablen hinzugefügt..."
     Add-InstallPath
