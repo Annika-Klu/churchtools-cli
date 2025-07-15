@@ -43,7 +43,7 @@ jobs:
         shell: pwsh
         run: |
           Import-Module ps2exe
-          ps2exe -inputFile "installer/installer.ps1" -outputFile "installer/ct-cli.exe" -icon="installer/icon.ico" -noConsole
+          ps2exe -inputFile "installer/installer.ps1" -outputFile "installer/ct-cli.exe" -icon "installer/icon.ico" -noConsole
 
       - name: Checkout public repo
         uses: actions/checkout@v3
