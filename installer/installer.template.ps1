@@ -83,7 +83,7 @@ try {
     Add-InstallPath
     $progressForm.Close()
 
-    Set-FormText -Form $modalForm -NewText "Fertig! Das CLI ist einsatzbereit.`nÖffne Windows PowerShell und tippe ein: 'ct hilfe',`num verfügbare Befehle zu sehen."
+    Set-FormText -Form $modalForm -NewText "Fertig! Das CLI ist einsatzbereit.`nÖffne Windows PowerShell und tippe ein: 'ct hilfe',`num verfügbare Befehle zu sehen.`nMöglicherweise musst du dich neu anmelden oder PowerShell neu öffnen, damit der Befehl 'ct' erkannt wird."
     $modalForm.ShowDialog()
 } catch {
     Set-FormText -Form $modalForm -NewText "Leider ist ein Fehler aufgetreten: $_"
