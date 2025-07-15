@@ -4,6 +4,9 @@ $ZipUrl = "__ZIP_URL__"
 $ZipFile = "$env:TEMP/ct.zip"
 $InstallPath = "$env:USERPROFILE\.ct"
 
+$iconPath = Join-Path $PSScriptRoot "icon.ico"
+$icon = [System.Drawing.Icon]::ExtractAssociatedIcon($iconPath)
+
 function Check-Compatibility {
     $psVersion = $PSVersionTable.PSVersion.Major
     if ($psVersion -lt 5) {
@@ -48,7 +51,8 @@ function Get-Form {
         [string]$InitText
     )
     $form = New-Object System.Windows.Forms.Form
-    $form.Text = "CLI Installer"
+    $form.Icon = $icon
+    $form.Text = "Churchtools CLI Installer"
     $form.Size = New-Object System.Drawing.Size(400,200)
 
     $label = New-Object System.Windows.Forms.Label
