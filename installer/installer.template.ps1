@@ -38,6 +38,11 @@ function Set-UpdateUrlEnv {
     Set-Content -Path $EnvFile -Value $EnvContent -Encoding UTF8
 }
 
+function Add-InitFlag {
+    $DummyFile = Join-Path $InstallPath "init"
+    New-Item -ItemType File -Path $DummyFile | Out-Null
+}
+
 function Get-Form {
     param(
         [string]$InitText
@@ -84,6 +89,7 @@ try {
     Set-FormText -Form $progressForm -NewText "Dateien werden heruntergeladen..."
     Get-CLICode
     Set-UpdateUrlEnv
+    Add-InitFlag
 
     Set-FormText -Form $progressForm -NewText  "Pfad wird zu Umgebungsvariablen hinzugefügt..."
     Add-InstallPath
