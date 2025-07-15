@@ -1,14 +1,9 @@
 name: Build and Publish Installer
 
 on:
-  push:
-    branches:
-      - master
-    paths:
-      - '.github/workflows/build_and_publish_installer.yml'
-      - 'installer/**'
   release:
     types: [published]
+  workflow_dispatch:
 
 env:
   ZIP_URL: ${{ vars.ZIP_URL }}
