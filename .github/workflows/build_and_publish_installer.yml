@@ -7,9 +7,12 @@ on:
     paths:
       - '.github/workflows/build_and_publish_installer.yml'
       - 'installer/**'
+  release:
+    types: [published]
 
 env:
   ZIP_URL: ${{ vars.ZIP_URL }}
+  RELEASE_TAG: ${{ github.events.release.tag || 'v0.0.0' }}
 
 jobs:
   build-installer:
@@ -26,7 +29,8 @@ jobs:
         shell: pwsh
         run: |
           $template = Get-Content installer/installer.template.ps1 -Encoding UTF8
-          $newContent = $template -replace '__ZIP_URL__', $env:ZIP_URL
+          $contentWithZipUrl = $template -replace '__ZIP_URL__', $env:ZIP_URL
+          $newContent = $contentWithZipUrl -replace '__RELEASE_TAG__', $env:RELEASE_TAG
           $newContent | Set-Content installer/installer.ps1 -Encoding UTF8
 
       - name: Install ps2exe module
