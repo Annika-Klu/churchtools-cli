@@ -2,8 +2,20 @@ Add-Type -AssemblyName System.Windows.Forms
 
 $ZipUrl = "__ZIP_URL__"
 $ZipFile = "$env:TEMP/ct.zip"
-
 $InstallPath = "$env:USERPROFILE\.ct"
+
+function Check-Compatibility {
+    $psVersion = $PSVersionTable.PSVersion.Major
+    if ($psVersion -lt 5) {
+        return "PowerShell-Version 5 oder höher erfoderlich. Aktuelle Version: $psVersion"
+    }
+    $osVersion = [System.Environment]::OSVersion.Version
+
+    if ($osVersion.Major -lt 10) {
+        return "Windows 10 oder höher erfoderlich. Aktuelles Betriebssystem: $($osVersion.ToString())"
+    }
+    return "OK"
+}
 
 function Get-CLICode {
     $ProgressPreference = 'SilentlyContinue'
@@ -18,6 +30,12 @@ function Add-InstallPath {
         $newPath = "$oldPath;$InstallPath"
         [Environment]::SetEnvironmentVariable("Path", $newPath, [EnvironmentVariableTarget]::User)
     }
+}
+
+function Set-UpdateUrlEnv {
+    $EnvFile = Join-Path $InstallPath ".env"
+    $EnvContent = "UPDATE_URL=$ZipUrl"
+    Set-Content -Path $EnvFile -Value $EnvContent -Encoding UTF8
 }
 
 function Get-Form {
@@ -51,18 +69,27 @@ $progressForm.Show()
 $modalForm = Get-Form -InitText ""
 
 try {
+    $compatibilityInfo = Check-Compatibility
+    if ($compatibilityInfo -notlike "OK") {
+        $progressForm.Close()
+        Set-FormText -Form $modalForm -NewText $compatibilityInfo
+        $modalForm.ShowDialog()
+        exit 0
+    }
+
     if (!(Test-Path -Path $InstallPath)) {
         New-Item -ItemType Directory -Path $InstallPath | Out-Null
     }
 
     Set-FormText -Form $progressForm -NewText "Dateien werden heruntergeladen..."
     Get-CLICode
+    Set-UpdateUrlEnv
 
     Set-FormText -Form $progressForm -NewText  "Pfad wird zu Umgebungsvariablen hinzugefügt..."
     Add-InstallPath
     $progressForm.Close()
 
-    Set-FormText -Form $modalForm -NewText "Fertig! Das CLI ist einsatzbereit.`nÖffne Windows PowerShell und tippe ein: 'ct hilfe',`num verfügbare Befehle zu sehen."
+    Set-FormText -Form $modalForm -NewText "Fertig! Das CLI ist einsatzbereit.`nÖffne Windows PowerShell und tippe ein: 'ct hilfe',`num verfügbare Befehle zu sehen.`nMöglicherweise musst du dich neu anmelden oder PowerShell neu öffnen, damit der Befehl 'ct' erkannt wird."
     $modalForm.ShowDialog()
 } catch {
     Set-FormText -Form $modalForm -NewText "Leider ist ein Fehler aufgetreten: $_"
