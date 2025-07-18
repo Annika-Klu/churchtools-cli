@@ -7,6 +7,9 @@ on:
 
 env:
   ZIP_URL: ${{ vars.ZIP_URL }}
+  PUBLISHER_NAME: ${{ vars.PUBLISHER_NAME }}
+  PUBLISHER_URL: ${{ vars.PUBLISHER_URL }}
+  PUBLISHER_EMAIL: ${{ vars.PUBLISHER_EMAIL }}
   RELEASE_TAG: ${{ github.event.release.tag_name || 'v0.0.0' }}
 
 jobs:
@@ -32,7 +35,10 @@ jobs:
         shell: pwsh
         run: |
           $template = Get-Content ct-cli.template.iss -Encoding UTF8
-          $iss = $template -replace '__RELEASE_TAG__', $env:RELEASE_TAG
+          $iss = $template -replace '__RELEASE_TAG__', $env:RELEASE_TAG `
+                              -replace '__PUBLISHER_NAME__', $env:PUBLISHER_NAME `
+                              -replace '__PUBLISHER_URL__', $env:PUBLISHER_URL `
+                              -replace '__PUBLISHER_EMAIL__', $env:PUBLISHER_EMAIL
           $iss | Set-Content ct-cli.iss -Encoding UTF8
 
       - name: Install Inno Setup

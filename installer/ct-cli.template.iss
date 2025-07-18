@@ -9,6 +9,10 @@ OutputBaseFilename=ct-cli-installer
 Compression=lzma
 SolidCompression=yes
 SetupIconFile=icon.ico
+Publisher=__PUBLISHER_NAME__
+PublisherURL=__PUBLISHER_URL__
+PublisherEmail=__PUBLISHER_EMAIL__
+AppContact=__PUBLISHER_EMAIL__ 
 
 [Files]
 Source: "installer.ps1"; DestDir: "{tmp}"; Flags: deleteafterinstall
