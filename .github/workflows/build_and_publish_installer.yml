@@ -42,7 +42,7 @@ jobs:
       - name: Compile installer with Inno Setup
         working-directory: ${{ github.workspace }}
         run: |
-          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer/ct-cli.iss
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" ct-cli.iss
 
       - name: Checkout public repo
         uses: actions/checkout@v3
