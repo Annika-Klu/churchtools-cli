@@ -9,9 +9,8 @@ OutputBaseFilename=ct-cli-installer
 Compression=lzma
 SolidCompression=yes
 SetupIconFile=icon.ico
-Publisher=__PUBLISHER_NAME__
-PublisherURL=__PUBLISHER_URL__
-PublisherEmail=__PUBLISHER_EMAIL__
+AppPublisher=__PUBLISHER_NAME__
+AppPublisherURL=__PUBLISHER_URL__
 AppContact=__PUBLISHER_EMAIL__ 
 
 [Files]
