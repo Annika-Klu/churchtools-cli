@@ -70,3 +70,4 @@ jobs:
           } else {
             git commit -m "Update Inno Setup installer"
             git push origin master
+          }
