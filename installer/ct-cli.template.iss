@@ -7,7 +7,7 @@ OutputDir=installer
 OutputBaseFilename=ct-cli-installer
 Compression=lzma
 SolidCompression=yes
-SetupIconFile=installer\icon.ico
+SetupIconFile=__ICON_PATH__
 
 [Files]
 Source: "installer\installer.ps1"; DestDir: "{tmp}"; Flags: deleteafterinstall
