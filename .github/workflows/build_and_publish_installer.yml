@@ -28,6 +28,7 @@ jobs:
           $script | Set-Content installer/installer.ps1 -Encoding UTF8
 
       - name: Create Inno Setup script from template
+        working-directory: ${{ github.workspace }}
         shell: pwsh
         run: |
           $template = Get-Content installer/ct-cli.template.iss -Encoding UTF8
@@ -38,6 +39,7 @@ jobs:
         run: choco install innosetup -y
 
       - name: Compile installer with Inno Setup
+        working-directory: ${{ github.workspace }}
         run: |
           & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer/ct-cli.iss
 
