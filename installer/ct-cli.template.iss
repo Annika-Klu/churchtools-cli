@@ -1,7 +1,7 @@
 [Setup]
 AppName=CT CLI Installer
 AppVersion=__RELEASE_TAG__
-DefaultDirName={userprofile}\.ct
+DefaultDirName={userappdata}\..\ .ct
 DisableDirPage=yes
 DefaultGroupName=CTCLI
 OutputDir=installer
