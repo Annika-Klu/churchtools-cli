@@ -7,11 +7,11 @@ OutputDir=installer
 OutputBaseFilename=ct-cli-installer
 Compression=lzma
 SolidCompression=yes
-SetupIconFile=__ICON_PATH__
+SetupIconFile=icon.ico
 
 [Files]
-Source: "installer\installer.ps1"; DestDir: "{tmp}"; Flags: deleteafterinstall
-Source: "installer\icon.ico"; DestDir: "{tmp}"; Flags: deleteafterinstall
+Source: "installer.ps1"; DestDir: "{tmp}"; Flags: deleteafterinstall
+Source: "icon.ico"; DestDir: "{tmp}"; Flags: deleteafterinstall
 
 [Run]
 Filename: "powershell.exe"; Parameters: "-ExecutionPolicy Bypass -NoLogo -NoProfile -WindowStyle Hidden -File ""{tmp}\installer.ps1"""; StatusMsg: "CLI wird installiert..."; Flags: runhidden

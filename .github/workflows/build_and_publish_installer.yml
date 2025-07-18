@@ -33,7 +33,7 @@ jobs:
         run: |
           $template = Get-Content installer/ct-cli.template.iss -Encoding UTF8
           $iconPath = Join-Path $PWD "installer\icon.ico"
-          $iss = $template -replace '__RELEASE_TAG__', $env:RELEASE_TAG -replace '__ICON_PATH__', $iconPath.Replace('\', '\\')
+          $iss = $template -replace '__RELEASE_TAG__', $env:RELEASE_TAG
           $iss | Set-Content installer/ct-cli.iss -Encoding UTF8
 
       - name: Install Inno Setup
