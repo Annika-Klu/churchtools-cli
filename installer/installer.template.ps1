@@ -1,49 +1,35 @@
-Add-Type -AssemblyName System.Windows.Forms
+Add-Type -AssemblyName Microsoft.VisualBasic
 
 $releaseVersion = "__RELEASE_TAG__"
 $ZipUrl = "__ZIP_URL__"
-$ZipFile = "$env:TEMP/ct.zip"
+$ZipFile = "$env:TEMP\ct.zip"
 $InstallPath = "$env:USERPROFILE\.ct"
-
-$iconPath = Join-Path $PSScriptRoot "icon.ico"
-$icon = [System.Drawing.Icon]::ExtractAssociatedIcon($iconPath)
+$MainPS1File = Join-Path $InstallPath "ct.ps1"
+$CmdShim = Join-Path $env:USERPROFILE "AppData\Local\Microsoft\WindowsApps\ct.cmd"
+$EnvFile = Join-Path $InstallPath ".env"
 
 function Check-Compatibility {
     $psVersion = $PSVersionTable.PSVersion.Major
     if ($psVersion -lt 5) {
-        return "PowerShell-Version 5 oder höher erfoderlich. Aktuelle Version: $psVersion"
+        return "PowerShell-Version 5 oder höher erforderlich. Aktuelle Version: $psVersion"
     }
-    
+
     $os = Get-CimInstance -ClassName Win32_OperatingSystem
-    if ($os.Version -lt 10) {
-        return "Windows 10 oder höher erfoderlich. Aktuelles Betriebssystem: $($osVersion.ToString())"
+    if ([version]$os.Version -lt [version]"10.0.0.0") {
+        return "Windows 10 oder höher erforderlich. Aktuelles Betriebssystem: $($os.Version)"
     }
     return "OK"
 }
 
 function Get-CLICode {
-    $ProgressPreference = 'SilentlyContinue'
-    Invoke-WebRequest -Uri $ZipUrl -OutFile $ZipFile -UseBasicParsing
-    Expand-Archive -Path $ZipFile -DestinationPath $InstallPath -Force
-    Remove-Item $ZipFile
-}
-
-function Add-InstallPath {
-    $oldPath = [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User)
-    if ([string]::IsNullOrEmpty($oldPath)) {
-        $newPath = $InstallPath
-    } elseif ($oldPath -notlike "*$InstallPath*") {
-        $newPath = "$oldPath;$InstallPath"
-    } else {
-        return
+    try {
+        Invoke-WebRequest -Uri $ZipUrl -OutFile $ZipFile -UseBasicParsing
+    } catch {
+        [Microsoft.VisualBasic.Interaction]::MsgBox("Fehler beim Herunterladen der ZIP-Datei: $_", "OKOnly,Critical", "Download-Fehler")
+        exit 1
     }
-    [Environment]::SetEnvironmentVariable("Path", $newPath, [EnvironmentVariableTarget]::User)
-}
-
-function Set-EnvContents {
-    $EnvFile = Join-Path $InstallPath ".env"
-    $EnvContent = "UPDATE_URL=$ZipUrl`nVERSION=$releaseVersion"
-    Set-Content -Path $EnvFile -Value $EnvContent -Encoding UTF8
+    Expand-Archive -Path $ZipFile -DestinationPath $InstallPath -Force
+    Remove-Item $ZipFile -Force
 }
 
 function Add-InitFlag {
@@ -51,63 +37,49 @@ function Add-InitFlag {
     New-Item -ItemType File -Path $DummyFile | Out-Null
 }
 
-function Get-Form {
-    param(
-        [string]$InitText
-    )
-    $form = New-Object System.Windows.Forms.Form
-    $form.Icon = $icon
-    $form.Text = "Churchtools CLI $releaseVersion | Installer"
-    $form.Size = New-Object System.Drawing.Size(400,200)
-
-    $label = New-Object System.Windows.Forms.Label
-    $label.Location = New-Object System.Drawing.Point(10,20)
-    $label.Size = New-Object System.Drawing.Size(380,80)
-    $label.Text = $InitText
-    $form.Controls.Add($label)
-    $form.Tag = @{ Label = $label }
-    return $form
+function Write-EnvFile {
+    $content = @"
+UPDATE_URL=$ZipUrl
+VERSION=$releaseVersion
+"@
+    Set-Content -Path $EnvFile -Value $content -Encoding UTF8
 }
 
-function Set-FormText {
-    param(
-        [System.Windows.Forms.Form]$Form,
-        [string]$NewText
-    )
-    $Form.Tag.Label.Text = $NewText
-    [System.Windows.Forms.Application]::DoEvents()
+function Set-CmdShim {
+    $shimContent = @"
+@echo off
+PowerShell -NoLogo -NoProfile -ExecutionPolicy Bypass -File `"$MainPS1File`" %*
+"@
+    Set-Content -Path $CmdShim -Value $shimContent -Encoding ASCII
 }
-
-$progressForm = Get-Form -InitText "Starte Installation..."
-$progressForm.Show()
-$modalForm = Get-Form -InitText ""
 
 try {
-    $compatibilityInfo = Check-Compatibility
-    if ($compatibilityInfo -notlike "OK") {
-        $progressForm.Close()
-        Set-FormText -Form $modalForm -NewText $compatibilityInfo
-        $modalForm.ShowDialog()
-        exit 0
+    $compatibility = Check-Compatibility
+    if ($compatibility -ne "OK") {
+        [Microsoft.VisualBasic.Interaction]::MsgBox($compatibility, "OKOnly,Critical", "Inkompatible Umgebung.")
+        exit 1
     }
 
-    if (!(Test-Path -Path $InstallPath)) {
+    if (!(Test-Path $InstallPath)) {
         New-Item -ItemType Directory -Path $InstallPath | Out-Null
     }
 
-    Set-FormText -Form $progressForm -NewText "Dateien werden heruntergeladen..."
     Get-CLICode
-    Set-EnvContents
     Add-InitFlag
+    if (!(Test-Path $MainPS1File)) {
+        [Microsoft.VisualBasic.Interaction]::MsgBox("Fehler: Die Haupt-Skriptdatei wurde nicht gefunden.", "OKOnly,Critical", "Datei nicht gefunden")
+        exit 1
+    }
+    Write-EnvFile
+    Set-CmdShim
 
-    Set-FormText -Form $progressForm -NewText  "Pfad wird zu Umgebungsvariablen hinzugefügt..."
-    Add-InstallPath
-    $progressForm.Close()
-
-    Set-FormText -Form $modalForm -NewText "Fertig! Das CLI ist einsatzbereit.`nÖffne Windows PowerShell und tippe ein: 'ct hilfe',`num verfügbare Befehle zu sehen.`nMöglicherweise musst du dich neu anmelden oder PowerShell neu öffnen, damit der Befehl 'ct' erkannt wird."
-    $modalForm.ShowDialog()
-} catch {
-    $progressForm.Close()
-    Set-FormText -Form $modalForm -NewText "Leider ist ein Fehler aufgetreten: $_"
-    $modalForm.ShowDialog()
+    [Microsoft.VisualBasic.Interaction]::MsgBox(
+        "ChurchTools CLI wurde erfolgreich installiert.`n`nDu kannst jetzt in PowerShell den Befehl `ct hilfe` verwenden.",
+        "OKOnly,Information",
+        "Installation abgeschlossen"
+    )
+}
+catch {
+    [Microsoft.VisualBasic.Interaction]::MsgBox("Fehler bei der Installation: $_", "OKOnly,Critical", "Fehler")
+    exit 1
 }
