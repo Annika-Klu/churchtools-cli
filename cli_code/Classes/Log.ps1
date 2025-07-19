@@ -19,3 +19,5 @@ class Log {
         Add-Content -Path $this.FullPath -Value $entry
     }
 }
+
+$log = [Log]::new("ct")
