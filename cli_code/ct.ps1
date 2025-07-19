@@ -57,5 +57,5 @@ try {
 
     exit 0
 } catch {
-    $log.Write("Error: $_")
+    $log.Write("Error in ct.ps1 $($_.Exception.Message)")
 }

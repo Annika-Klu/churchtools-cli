@@ -4,5 +4,5 @@ try {
     Write-Host "Angemeldet als $($ct.User.firstName) $($ct.User.lastName)"
     Write-Host "Email: $($ct.User.email)"
 } catch {
-    $log.Write("Error: $_")
+    $log.Write("Error in hilfe.ps1 $($_.Exception.Message)")
 }

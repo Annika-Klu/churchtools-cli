@@ -1,5 +1,5 @@
 try {
     Show-Help
 } catch {
-    $log.Write("Error: $($_.Exception.Message)")
+    $log.Write("Error in hilfe.ps1 $($_.Exception.Message)")
 }
