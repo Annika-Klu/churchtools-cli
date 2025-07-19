@@ -1,0 +1,31 @@
+name: Zip and Publish CLI Code
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  zip-upload:
+    runs-on: ubuntu-latest
+    environment: cli_code
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Zip CLI Code
+        run: |
+          cd cli_code
+          zip -r ../ct-cli.zip .
+
+      - name: Upload CLI code to current release
+        if: github.event_name == 'release' && github.event.action == 'published'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ct-cli.zip
+          asset_name: ct-cli.zip
+          asset_content_type: application/octet-stream
