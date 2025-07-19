@@ -1,1 +1,2 @@
-Lädt PowerPoint-Präsentation herunter, wenn an dem Tag eine Veranstaltung geplant und bei dieser im Churchtools-Kalender eine Präsentation gespeichert ist.
+Lädt PowerPoint-Präsentation herunter, sofern an dem Tag eine Veranstaltung 
+geplant und für diese im Churchtools-Kalender eine Präsentation gespeichert ist.
