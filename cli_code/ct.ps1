@@ -3,25 +3,7 @@ param (
     [string[]]$Args
 )
 
-$minVersion = [Version]"5.1"
-
-if ($PSVersionTable.PSVersion -lt $minVersion) {
-    Write-Warning "Warnung: Deine PowerShell-Version ist $($PSVersionTable.PSVersion). Für dieses CLI wird mindestens Version $minVersion empfohlen."
-}
-
-. "$PSScriptRoot/installRequirements.ps1"
-. "$PSScriptRoot/loadClassesAndModules.ps1"
-
-$log = [Log]::new("ct")
-try {
-    [Console]::OutputEncoding = [Text.UTF8Encoding]::new()
-    [Console]::InputEncoding = [Text.UTF8Encoding]::new()
-} catch {
-    log.Write("UTF-8 encoding could not be set: $_")
-}
-
-$envPath = Join-Path $PSScriptRoot ".env"
-Get-DotEnv -Path $envPath
+. "$PSScriptRoot/preflight/run.ps1"
 
 $initFile = Join-Path $PSScriptRoot "init"
 if (Test-Path $initFile) {
