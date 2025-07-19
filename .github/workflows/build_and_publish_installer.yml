@@ -7,7 +7,11 @@ on:
 
 env:
   ZIP_URL: ${{ vars.ZIP_URL }}
-  RELEASE_TAG: ${{ github.events.release.tag || 'v0.0.0' }}
+  PUBLISHER_NAME: ${{ vars.PUBLISHER_NAME }}
+  PUBLISHER_URL: ${{ vars.PUBLISHER_URL }}
+  PUBLISHER_EMAIL: ${{ vars.PUBLISHER_EMAIL }}
+  CT_SUBDOMAIN: ${{ vars.CT_SUBDOMAIN }}
+  RELEASE_TAG: ${{ github.event.release.tag_name || 'v0.0.0' }}
 
 jobs:
   build-installer:
@@ -20,24 +24,33 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Create installer script
+      - name: Create installer script from template
         shell: pwsh
         run: |
-          $template = Get-Content installer/installer.template.ps1 -Encoding UTF8
-          $contentWithZipUrl = $template -replace '__ZIP_URL__', $env:ZIP_URL
-          $newContent = $contentWithZipUrl -replace '__RELEASE_TAG__', $env:RELEASE_TAG
-          $newContent | Set-Content installer/installer.ps1 -Encoding UTF8
+          $template = Get-Content installer/installer.template.ps1 -Raw -Encoding UTF8
+          $script = $template -replace '__ZIP_URL__', $env:ZIP_URL `
+                              -replace '__RELEASE_TAG__', $env:RELEASE_TAG `
+                              -replace '__CT_SUBDOMAIN__', $env:CT_SUBDOMAIN
+          $script | Set-Content installer/installer.ps1 -Encoding UTF8NoBOM
 
-      - name: Install ps2exe module
+      - name: Create Inno Setup script from template
+        working-directory: installer
         shell: pwsh
         run: |
-          Install-Module -Name ps2exe -Scope CurrentUser -Force
+          $template = Get-Content ct-cli.template.iss -Encoding UTF8
+          $iss = $template -replace '__RELEASE_TAG__', $env:RELEASE_TAG `
+                              -replace '__PUBLISHER_NAME__', $env:PUBLISHER_NAME `
+                              -replace '__PUBLISHER_URL__', $env:PUBLISHER_URL `
+                              -replace '__PUBLISHER_EMAIL__', $env:PUBLISHER_EMAIL
+          $iss | Set-Content ct-cli.iss -Encoding UTF8
 
-      - name: Compile installer.ps1 to exe
-        shell: pwsh
+      - name: Install Inno Setup
+        run: choco install innosetup -y
+
+      - name: Compile installer with Inno Setup
+        working-directory: installer
         run: |
-          Import-Module ps2exe
-          ps2exe -inputFile "installer/installer.ps1" -outputFile "installer/ct-cli.exe" -icon "installer/icon.ico" -noConsole
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" ct-cli.iss
 
       - name: Checkout public repo
         uses: actions/checkout@v3
@@ -47,12 +60,12 @@ jobs:
           path: public-repo
           fetch-depth: 0
 
-      - name: Copy installer exe to public repo
+      - name: Copy Inno Setup installer to public repo
         run: |
           if (!(Test-Path "public-repo/installer")) {
             New-Item -ItemType Directory -Path "public-repo/installer" -Force
           }
-          Copy-Item "installer/ct-cli.exe" "public-repo/installer/ct-cli.exe" -Force
+          Copy-Item "installer/ct-cli-installer.exe" "public-repo/installer/ct-cli-installer.exe" -Force
 
       - name: Commit & Push to public repo (branch installer)
         working-directory: public-repo
@@ -60,10 +73,10 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add installer/ct-cli.exe
+          git add installer/ct-cli-installer.exe
           if (git diff-index --quiet HEAD) {
             Write-Host "No changes to commit"
           } else {
-            git commit -m "Update installer exe"
+            git commit -m "Update Inno Setup installer"
             git push origin master
           }

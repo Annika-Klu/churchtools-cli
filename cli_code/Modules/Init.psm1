@@ -2,7 +2,10 @@ Import-Module "$PSScriptRoot\DotEnv.psm1"
 
 function Set-ApiUrl {
     do {
-        $subdomain = Read-Host "Welche Subdomain hat deine Gemeinde? (z. B. bei 'https://beispielgemeinde.church.tools' gib ein 'beispielgemeinde'.)"
+        $subdomain = $CT_SUBDOMAIN
+        if (-not $subdomain) {
+            $subdomain = Read-Host "Welche Subdomain hat deine Gemeinde? (z. B. bei 'https://beispielgemeinde.church.tools' gib ein 'beispielgemeinde'.)"
+        }
         $churchUrl = "https://$subdomain.church.tools"
 
         $errorMsg = "Ungültige Eingabe: '$subdomain.church.tools' existiert nicht."
@@ -14,7 +17,7 @@ function Set-ApiUrl {
                 Write-Host $errorMsg
                 $isValid = $false
             } else {
-                Write-Host "Deine Gemeinde: $churchUrl"
+                Write-Host "Anmelden bei: $churchUrl"
                 $isValid = $true
             }
         } catch {
@@ -65,7 +68,9 @@ function Set-CliEnv {
     param(
         [string]$EnvPath
     )
-    Write-Host "Willkommen zum Churchtools-CLI!"
+    Write-Host "--------------------------------" -ForegroundColor Green
+    Write-Host "Willkommen zum Churchtools-CLI!" -ForegroundColor Green
+    Write-Host "--------------------------------" -ForegroundColor Green
     $envVars = @{}
     $envVars["CT_API_URL"] = Set-ApiUrl
     $envVars["CT_API_TOKEN"] = Set-ApiToken -ApiUrl $envVars["CT_API_URL"]
