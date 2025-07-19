@@ -21,14 +21,14 @@ try {
 }
 
 $envPath = Join-Path $PSScriptRoot ".env"
+Get-DotEnv -Path $envPath
 
 $initFile = Join-Path $PSScriptRoot "init"
 if (Test-Path $initFile) {
     Set-CliEnv -EnvPath $envPath
     Remove-Item $initFile -ErrorAction SilentlyContinue
+    Get-DotEnv -Path $envPath
 }
-
-Get-DotEnv -Path $envPath
 
 try {
     $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
