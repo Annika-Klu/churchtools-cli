@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 env:
-  UPDATE_URL: ${{ vars.UPDATE_URL }}
+  UPDATE_URL: https://github.com/${{ github.repository }}releases/latest/download/ct-cli.zip
   PUBLISHER_NAME: ${{ vars.PUBLISHER_NAME }}
   PUBLISHER_URL: ${{ vars.PUBLISHER_URL }}
   PUBLISHER_EMAIL: ${{ vars.PUBLISHER_EMAIL }}
