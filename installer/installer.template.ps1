@@ -79,8 +79,7 @@ try {
         "OKOnly,Information",
         "Installation abgeschlossen"
     )
-}
-catch {
+} catch {
     [Microsoft.VisualBasic.Interaction]::MsgBox("Fehler bei der Installation: $_", "OKOnly,Critical", "Fehler")
     exit 1
 }

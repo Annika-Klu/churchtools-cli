@@ -37,7 +37,6 @@ try {
     if (-not $Command) {
         Write-Host "Kein Befehl angegeben. Benutzung:`nct <Befehl>`nDann mit der Eingabetaste bestätigen."
         Write-Host "Mit 'ct hilfe' kannst du verfügbare Befehle anzeigen lassen."
-        Show-Help
         exit 1
     }
 
