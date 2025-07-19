@@ -1,7 +1,7 @@
 Add-Type -AssemblyName Microsoft.VisualBasic
 
 $releaseVersion = "__RELEASE_TAG__"
-$ZipUrl = "__ZIP_URL__"
+$ZipUrl = "__UPDATE_URL__"
 $ZipFile = "$env:TEMP\ct.zip"
 $InstallPath = "$env:USERPROFILE\.ct"
 $MainPS1File = Join-Path $InstallPath "ct.ps1"
