@@ -10,6 +10,7 @@ env:
   PUBLISHER_NAME: ${{ vars.PUBLISHER_NAME }}
   PUBLISHER_URL: ${{ vars.PUBLISHER_URL }}
   PUBLISHER_EMAIL: ${{ vars.PUBLISHER_EMAIL }}
+  CT_SUBDOMAIN: ${{ vars.CT_SUBDOMAIN }}
   RELEASE_TAG: ${{ github.event.release.tag_name || 'v0.0.0' }}
 
 jobs:
@@ -26,9 +27,11 @@ jobs:
       - name: Create installer script from template
         shell: pwsh
         run: |
-          $template = Get-Content installer/installer.template.ps1 -Encoding UTF8
-          $script = $template -replace '__ZIP_URL__', $env:ZIP_URL -replace '__RELEASE_TAG__', $env:RELEASE_TAG
-          $script | Set-Content installer/installer.ps1 -Encoding UTF8
+          $template = Get-Content installer/installer.template.ps1 -Raw -Encoding UTF8
+          $script = $template -replace '__ZIP_URL__', $env:ZIP_URL `
+                              -replace '__RELEASE_TAG__', $env:RELEASE_TAG `
+                              -replace '__CT_SUBDOMAIN__', $env:CT_SUBDOMAIN
+          $script | Set-Content installer/installer.ps1 -Encoding UTF8NoBOM
 
       - name: Create Inno Setup script from template
         working-directory: installer

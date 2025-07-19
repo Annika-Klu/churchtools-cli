@@ -41,6 +41,7 @@ function Write-EnvFile {
     $content = @"
 UPDATE_URL=$ZipUrl
 VERSION=$releaseVersion
+CT_SUBDOMAIN=__CT_SUBDOMAIN__
 "@
     Set-Content -Path $EnvFile -Value $content -Encoding UTF8
 }
