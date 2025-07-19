@@ -1,6 +1,6 @@
 $ErrorActionPreference = "Stop"
 
-$requirements = Import-PowerShellDataFile -Path "$PSScriptRoot/requirements.psd1"
+$requirements = Import-PowerShellDataFile -Path "$PWD/requirements.psd1"
 
 foreach ($mod in $requirements.RequiredModules) {
     $name = $mod.Name

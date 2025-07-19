@@ -35,6 +35,7 @@ function Set-ApiToken {
     )
     do {
         try {
+            Write-Host ""
             $token = Read-Host "Bitte gib dein API-Token ein"
             $ct = [ChurchTools]::new($ApiUrl, $token)
             Write-Host "Authentifiziert als $($ct.User.firstName) $($ct.User.lastName)"
