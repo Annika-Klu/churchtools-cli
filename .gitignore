@@ -5,7 +5,7 @@
 .env*
 !.env.example
 
-/logs
+logs
 *.log
 
-.usercache.json
+.usercache*.json
