@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 env:
-  UPDATE_URL: ${{ vars.UPDATE_URL }}
+  UPDATE_URL: https://github.com/${{ github.repository }}releases/latest/download/ct-cli.zip
   PUBLISHER_NAME: ${{ vars.PUBLISHER_NAME }}
   PUBLISHER_URL: ${{ vars.PUBLISHER_URL }}
   PUBLISHER_EMAIL: ${{ vars.PUBLISHER_EMAIL }}
@@ -52,31 +52,13 @@ jobs:
         run: |
           & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" ct-cli.iss
 
-      - name: Checkout public repo
-        uses: actions/checkout@v3
+      - name: Upload installer to current release
+        if: github.event_name == 'release' && github.event.action == 'published'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          repository: Annika-Klu/ct-cli-files
-          token: ${{ secrets.CT_CLI_FILES_TOKEN }}
-          path: public-repo
-          fetch-depth: 0
-
-      - name: Copy Inno Setup installer to public repo
-        run: |
-          if (!(Test-Path "public-repo/installer")) {
-            New-Item -ItemType Directory -Path "public-repo/installer" -Force
-          }
-          Copy-Item "installer/ct-cli-installer.exe" "public-repo/installer/ct-cli-installer.exe" -Force
-
-      - name: Commit & Push to public repo (branch installer)
-        working-directory: public-repo
-        shell: pwsh
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add installer/ct-cli-installer.exe
-          if (git diff-index --quiet HEAD) {
-            Write-Host "No changes to commit"
-          } else {
-            git commit -m "Update Inno Setup installer"
-            git push origin master
-          }
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: installer/ct-cli-installer.exe
+          asset_name: ct-cli-installer.exe
+          asset_content_type: application/octet-stream
