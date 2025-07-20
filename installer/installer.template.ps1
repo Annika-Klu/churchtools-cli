@@ -16,7 +16,7 @@ function Get-GitHubModule {
     return $moduleFilePath
 }
 
-function Check-Compatibility {
+function Assert-Compatibility {
     $psVersion = $PSVersionTable.PSVersion.Major
     if ($psVersion -lt 5) {
         return "PowerShell-Version 5 oder höher erforderlich. Aktuelle Version: $psVersion"
@@ -64,10 +64,9 @@ PowerShell -NoLogo -NoProfile -ExecutionPolicy Bypass -File `"$MainPS1File`" %*
 }
 
 try {
-    $compatibility = Check-Compatibility
+    $compatibility = Assert-Compatibility
     if ($compatibility -ne "OK") {
-        [Microsoft.VisualBasic.Interaction]::MsgBox($compatibility, "OKOnly,Critical", "Inkompatible Umgebung.")
-        exit 1
+        throw "Inkompatible Umgebung. $compatibility"
     }
 
     if (!(Test-Path $InstallPath)) {
@@ -79,8 +78,7 @@ try {
 
     Get-CLICode
     if (!(Test-Path $MainPS1File)) {
-        [Microsoft.VisualBasic.Interaction]::MsgBox("Fehler: Die Haupt-Datei wurde nicht gefunden.", "OKOnly,Critical", "Datei nicht gefunden")
-        exit 1
+        throw "Die Haupt-Datei wurde nicht gefunden."
     }
     Add-InitFlag
     Write-EnvFile
@@ -93,6 +91,9 @@ try {
         "Installation abgeschlossen"
     )
 } catch {
+    if (Test-Path $InstallPath) {
+        Remove-Item $InstallPath -Recurse -Force
+    }
     [Microsoft.VisualBasic.Interaction]::MsgBox("Fehler bei der Installation: $_", "OKOnly,Critical", "Fehler")
     exit 1
 }
