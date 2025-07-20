@@ -8,6 +8,14 @@ $MainPS1File = Join-Path $InstallPath "ct.ps1"
 $CmdShim = Join-Path $env:USERPROFILE "AppData\Local\Microsoft\WindowsApps\ct.cmd"
 $EnvFile = Join-Path $InstallPath ".env"
 
+function Get-GitHubModule {
+    $url = $ReleasesUrl -replace "api.github.com/repos", "raw.githubusercontent.com"
+    $url = $url -replace "releases", "master/cli_code/Modules/GitHub.psm1"
+    $moduleFilePath = Join-Path $PSScriptRoot "GitHub.psm1"
+    Invoke-WebRequest -Uri $url -OutFile $moduleFilePath
+    return $moduleFilePath
+}
+
 function Check-Compatibility {
     $psVersion = $PSVersionTable.PSVersion.Major
     if ($psVersion -lt 5) {
@@ -23,22 +31,9 @@ function Check-Compatibility {
 
 function Get-CLICode {
     try {
-        $response = Invoke-WebRequest -Uri $ReleasesUrl
-        $releases = $response.Content | ConvertFrom-Json
-        if ($releases.Count -eq 0) {
-            throw "Kein Release gefunden."
-        }
-        $latestRelease = $releases | Sort-Object { [datetime]$_.published_at } -Descending | Select-Object -First 1
-        $assetsResponse = Invoke-WebRequest -Uri $latestRelease.assets_url
-        $assets = $assetsResponse.Content | ConvertFrom-Json
-        if ($assets.Count -eq 0) {
-            throw "Keine Assets für Release $($latestRelease.tag_name) gefunden."
-        }
-        $cliAsset = $assets | Where-Object { $_.name -eq "ct-cli.zip" }
-        if (-not $cliAsset) {
-            throw "Die relevanten Dateien wurden nicht in den Release Assets gefunden."
-        }
-        Invoke-WebRequest -Uri $cliAsset.browser_download_url -OutFile $ZipFile -UseBasicParsing
+        $latestRelease = Get-LatestRelease -ReleasesUrl $ReleasesUrl
+        $cliCode = Get-ReleaseAsset -Release $latestRelease -AssetName "ct-cli.zip"
+        Invoke-WebRequest -Uri $cliCode.browser_download_url -OutFile $ZipFile -UseBasicParsing
     } catch {
         throw "ZIP-Datei konnte nicht heruntergeladen werden: $_"
     }
@@ -79,15 +74,19 @@ try {
         New-Item -ItemType Directory -Path $InstallPath | Out-Null
     }
 
+    $moduleFilePath = Get-GitHubModule
+    Import-Module $moduleFilePath -Force
+
     Get-CLICode
-    Add-InitFlag
     if (!(Test-Path $MainPS1File)) {
-        [Microsoft.VisualBasic.Interaction]::MsgBox("Fehler: Die Haupt-Skriptdatei wurde nicht gefunden.", "OKOnly,Critical", "Datei nicht gefunden")
+        [Microsoft.VisualBasic.Interaction]::MsgBox("Fehler: Die Haupt-Datei wurde nicht gefunden.", "OKOnly,Critical", "Datei nicht gefunden")
         exit 1
     }
+    Add-InitFlag
     Write-EnvFile
     Set-CmdShim
 
+    Remove-Item $moduleFilePath -Force
     [Microsoft.VisualBasic.Interaction]::MsgBox(
         "ChurchTools CLI wurde erfolgreich installiert.`n`nDu kannst jetzt in PowerShell den Befehl `ct hilfe` verwenden.",
         "OKOnly,Information",
