@@ -9,7 +9,7 @@ foreach ($mod in $requirements.RequiredModules) {
     $installed = Get-Module -ListAvailable -Name $name | Where-Object { $_.Version -ge [Version]$minVersion }
 
     if (-not $installed) {
-        Write-Host "Installiere Modul $name (Min.-Version: $minVersion)..."
+        Out-Message "Installiere Modul $name ($($mod.Description))..."
         Install-Module -Name $name -MinimumVersion $minVersion -Force -Scope CurrentUser
     }
 }

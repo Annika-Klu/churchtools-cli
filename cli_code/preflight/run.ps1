@@ -1,8 +1,7 @@
 . "$PSScriptRoot/loadClassesAndModules.ps1"
 . "$PSScriptRoot/installRequirements.ps1"
 
-$envPath = Join-Path $PWD ".env"
-Get-DotEnv -Path $envPath
+Get-DotEnv
 
 function Set-Encoding {
     [Console]::OutputEncoding = [Text.UTF8Encoding]::new()
@@ -16,7 +15,14 @@ function Test-PSVersion {
     }
 }
 
+$initFile = Join-Path $PWD "init"
+
 try {
+    if (Test-Path $initFile) {
+        Set-CliEnv
+        Remove-Item $initFile -ErrorAction SilentlyContinue
+        Get-DotEnv
+    }
     Set-Encoding
     Test-PSVersion
 } catch {
