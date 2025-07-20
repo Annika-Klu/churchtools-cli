@@ -14,14 +14,14 @@ function Set-ApiUrl {
             $response = Invoke-WebRequest -Uri $churchUrl -TimeoutSec 5 -ErrorAction Stop
             $body = $response.Content
             if ($body -match "Finde deine Gemeinde") {
-                Write-Host $errorMsg
+                Out-Message $errorMsg error
                 $isValid = $false
             } else {
-                Write-Host "Anmelden bei: $churchUrl"
+                Out-Message "Anmelden bei: $churchUrl"
                 $isValid = $true
             }
         } catch {
-            Write-Host $errorMsg
+            Out-Message $errorMsg error
             $isValid = $false
         }
 
@@ -36,12 +36,12 @@ function Set-ApiToken {
     do {
         try {
             Write-Host ""
-            $token = Read-Host "Bitte gib dein API-Token ein"
+            $token = Read-Host "Bitte gib dein Login-Token ein"
             $ct = [ChurchTools]::new($ApiUrl, $token)
-            Write-Host "Authentifiziert als $($ct.User.firstName) $($ct.User.lastName)"
+            Out-Message "Authentifiziert als $($ct.User.firstName) $($ct.User.lastName)"
             $isValid = $true
         } catch {
-            Write-Host "Das Token ist ungültig. $_"
+            Out-Message "Das Token ist ungültig. $_" error
             $isValid = $false
         }
     } until ($isValid)
@@ -55,29 +55,40 @@ function Set-OutDir {
         if (-not $selectedOutDir) {
             return $suggestedOutDir
         }
-        if (Test-Path $pfad) {
+        if (Test-Path $selectedOutDir) {
             $isValid = $true
         } else {
-            Write-Host "Ungültiger Pfad."
+            Out-Message "Ungültiger Pfad." error
             $isValid = $false
         }
     } until ($isValid)
     return $selectedOutDir
 }
 
+$initialSetupInfo = @"
+Für die Ersteinrichtung brauchst du dein Churchtools-Login-Token. Um es zu finden, 
+- suche in Churchtools unter 'Personen' deinen eigenen Datensatz und klicke ihn an.
+- Klicke auf 'Berechtigungen'. 
+- Im dann angezeigten Fenseter klicke auf 'Login-Token' und kopiere das angezeigte Token (Strg + C ist am einfachsten).
+- Wenn das CLI dich auffordert, gib dein Token ein. Bei Rechtsklick in die Powershell-Konsole werden kopierte Inhalte eingefügt.
+- Bestätige mit Eingabetaste.
+"@
+
 function Set-CliEnv {
     param(
         [string]$EnvPath
     )
-    Write-Host "--------------------------------" -ForegroundColor Green
-    Write-Host "Willkommen zum Churchtools-CLI!" -ForegroundColor Green
-    Write-Host "--------------------------------" -ForegroundColor Green
+    Out-Line
+    Out-Message  "Willkommen zum Churchtools-CLI!"
+    Out-Line
+    Out-Message  $initialSetupInfo
+    Out-Line
     $envVars = @{}
     $envVars["CT_API_URL"] = Set-ApiUrl
     $envVars["CT_API_TOKEN"] = Set-ApiToken -ApiUrl $envVars["CT_API_URL"]
     $envVars["OUT_DIR"] = Set-OutDir
     Update-DotEnv -EnvPath $EnvPath -KeyValuePairs $envVars
-    Write-Host "Danke für deine Angaben! Das CLI ist jetzt fertig konfiguriert."
+    Out-Message "Danke für deine Angaben! Das CLI ist jetzt fertig konfiguriert."
 }
 
 Export-ModuleMember -Function Set-CliEnv

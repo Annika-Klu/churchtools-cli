@@ -41,7 +41,6 @@ function Get-CommandPath {
         $expectedPathParts = Join-Path $expectedPathParts ($SubCommands -join "\")
     }
     $expectedPath = $expectedPathParts + ".ps1"
-    Write-Host $expectedPath
     if (Test-Path $expectedPath) {
         return $expectedPath
     } 

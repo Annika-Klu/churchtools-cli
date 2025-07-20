@@ -12,7 +12,7 @@ $initFile = Join-Path $PSScriptRoot "init"
 $envPath = Join-Path $PSScriptRoot ".env"
 
 function Use-MentionHelp {
-    Write-Host "Mit 'ct hilfe' kannst du eine Liste aller Befehle anzeigen lassen."  -ForegroundColor Blue
+    Out-Message "Mit 'ct hilfe' kannst du eine Liste aller Befehle anzeigen lassen."
 }
 
 try {
@@ -23,7 +23,7 @@ try {
     }
 
     if (-not $Command) {
-        Write-Host "Bitte Befehl eingeben und mit der Eingabetaste bestätigen." -ForegroundColor Blue
+        Out-Message "Bitte Befehl eingeben und mit der Eingabetaste bestätigen."
         Use-MentionHelp
         exit 1
     }
@@ -35,15 +35,15 @@ try {
     }
 
     if ($args.Flags.debug) {
-        Write-Host "Subcommands: $($args.Subcommands -join ', ')"
-        Write-Host "Arguments: $($args.Arguments | Out-String)"
-        Write-Host "Flags: $($args.Flags | Out-String)"
+        Out-Message "Subcommands: $($args.Subcommands -join ', ')" debug
+        Out-Message "Arguments: $($args.Arguments | Out-String)" debug
+        Out-Message "Flags: $($args.Flags | Out-String)" debug
     }
     
     $commandsDir = Join-Path $PSScriptRoot "Commands"
     $commandPath = Get-CommandPath -CommandsDir $commandsDir -Command $Command -SubCommands $args.Subcommands
     if (-not $commandPath) {
-        Write-Host "'$Command $AdditionalArgs' ist kein gültiger Befehl." -ForegroundColor Blue
+        Out-Message "'$Command $AdditionalArgs' ist kein gültiger Befehl."
         Use-MentionHelp
         exit 1
     }
@@ -52,13 +52,13 @@ try {
     $ct = [ChurchTools]::new($CT_API_URL, $CT_API_TOKEN)
 
     if ($allowedCommands.FullName -notcontains $commandPath) {
-        Write-Host "Du bist nicht berechtigt, diesen Befehl auszuführen." -ForegroundColor Red
+        Out-Message "Du bist nicht berechtigt, diesen Befehl auszuführen." -Type error
         throw "User $($ct.User.email) is not allowed to run command '$Command'."
     }
     . $commandPath @($AdditionalArgs)
 
     exit 0
 } catch {
-    Write-Host $_ -ForegroundColor Red
+    Out-Message $_ error
     $log.Write("Error in ct.ps1 $($_.Exception.Message)")
 }

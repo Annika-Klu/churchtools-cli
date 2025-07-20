@@ -1,28 +1,21 @@
-function Write-Line {
-    $width = $Host.UI.RawUI.WindowSize.Width
-    Write-Host ("_" * $width) -ForegroundColor Yellow
-}
-
 function Show-Help {
-    Write-Host "`nListe der Befehle" -ForegroundColor Yellow
+    Out-Message "`nListe der Befehle"
 
     $allowedCommands = Get-AllowedCommands
     $groups = $allowedCommands | Group-Object DirectoryName | Sort-Object Name
 
     foreach ($group in $groups) {
-        Write-Line
-        Write-Host ""
+        Out-Line
         
         $relativePath = $group.Name -replace [regex]::Escape($PSScriptRoot), ''
         $relativePath = $relativePath.TrimStart('\','/')
         $folderName = Split-Path $relativePath -Leaf
 
         if ($folderName -match "Commands") {
-            Write-Host ("{0,-14} {1}" -f "Allgemein", "Verwendung: 'ct <befehl>'") -ForegroundColor Yellow
+            Out-Message ("{0,-14} {1}" -f "Allgemein", "Verwendung: 'ct <befehl>'")
         } else {
-            Write-Host ("{0,-14} {1}" -f $folderName , "Verwendung: 'ct $folderName <befehl>'") -ForegroundColor Yellow
+            Out-Message ("{0,-14} {1}" -f $folderName , "Verwendung: 'ct $folderName <befehl>'")
         }
-        Write-Host ("")
 
         $helpItems = foreach ($cmd in $group.Group | Sort-Object Name) {
             $name = $cmd.BaseName
@@ -45,12 +38,12 @@ function Show-Help {
         }
 
         foreach ($item in $helpItems) {
-            Write-Host ("- {0,-12} {1}" -f $item.Name, $item.FirstLine) -ForegroundColor Yellow
+            Out-Message ("- {0,-12} {1}" -f $item.Name, $item.FirstLine) 
 
             foreach ($line in $item.ExtraLines) {
-                Write-Host ("  {0,-12} {1}" -f "", $line) -ForegroundColor Yellow
+                Out-Message ("  {0,-12} {1}" -f "", $line)
             }
         }
-        Write-Host ""
     }
+    Write-Host ""
 }
