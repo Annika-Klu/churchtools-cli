@@ -1,15 +1,11 @@
-function Get-DotEnv {
-    [CmdletBinding()]
-    param (
-        [Parameter(Mandatory)]
-        [string]$Path
-    )
+$EnvPath = Join-Path $PWD ".env"
 
-    if (-Not (Test-Path $Path)) {
-        Throw "File not found: $Path"
+function Get-DotEnv {
+    if (-Not (Test-Path $EnvPath)) {
+        Throw "File not found: $EnvPath"
     }
 
-    Get-Content $Path | ForEach-Object {
+    Get-Content $EnvPath | ForEach-Object {
         if ($_ -match '^\s*([^#][\w\.]+)\s*=\s*(.*)$') {
             $name, $value = $matches[1], $matches[2]
             Set-Variable -Name $name -Value $value -Scope Global
@@ -21,7 +17,6 @@ Export-ModuleMember -Function Get-DotEnv
 
 function Update-DotEnv {
     param(
-        [string]$EnvPath,
         [hashtable]$KeyValuePairs
     )
 

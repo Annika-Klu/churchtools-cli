@@ -87,7 +87,7 @@ function Set-CliEnv {
     $envVars["CT_API_URL"] = Set-ApiUrl
     $envVars["CT_API_TOKEN"] = Set-ApiToken -ApiUrl $envVars["CT_API_URL"]
     $envVars["OUT_DIR"] = Set-OutDir
-    Update-DotEnv -EnvPath $EnvPath -KeyValuePairs $envVars
+    Update-DotEnv -KeyValuePairs $envVars
     Out-Message "Danke für deine Angaben! Das CLI ist jetzt fertig konfiguriert."
 }
 
