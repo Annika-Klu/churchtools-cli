@@ -1,7 +1,7 @@
 Add-Type -AssemblyName Microsoft.VisualBasic
 
 $releaseVersion = "__RELEASE_TAG__"
-$ZipUrl = "__UPDATE_URL__"
+$ReleasesUrl = "__RELEASES_URL__"
 $ZipFile = "$env:TEMP\ct.zip"
 $InstallPath = "$env:USERPROFILE\.ct"
 $MainPS1File = Join-Path $InstallPath "ct.ps1"
@@ -23,10 +23,24 @@ function Check-Compatibility {
 
 function Get-CLICode {
     try {
-        Invoke-WebRequest -Uri $ZipUrl -OutFile $ZipFile -UseBasicParsing
+        $response = Invoke-WebRequest -Uri $ReleasesUrl
+        $releases = $response.Content | ConvertFrom-Json
+        if ($releases.Count -eq 0) {
+            throw "Kein Release gefunden."
+        }
+        $latestRelease = $releases | Sort-Object { [datetime]$_.published_at } -Descending | Select-Object -First 1
+        $assetsResponse = Invoke-WebRequest -Uri $latestRelease.assets_url
+        $assets = $assetsResponse.Content | ConvertFrom-Json
+        if ($assets.Count -eq 0) {
+            throw "Keine Assets für Release $($latestRelease.tag_name) gefunden."
+        }
+        $cliAsset = $assets | Where-Object { $_.name -eq "ct-cli.zip" }
+        if (-not $cliAsset) {
+            throw "Die relevanten Dateien wurden nicht in den Release Assets gefunden."
+        }
+        Invoke-WebRequest -Uri $cliAsset.browser_download_url -OutFile $ZipFile -UseBasicParsing
     } catch {
-        [Microsoft.VisualBasic.Interaction]::MsgBox("Fehler beim Herunterladen der ZIP-Datei: $_", "OKOnly,Critical", "Download-Fehler")
-        exit 1
+        throw "ZIP-Datei konnte nicht heruntergeladen werden: $_"
     }
     Expand-Archive -Path $ZipFile -DestinationPath $InstallPath -Force
     Remove-Item $ZipFile -Force
@@ -39,7 +53,7 @@ function Add-InitFlag {
 
 function Write-EnvFile {
     $content = @"
-UPDATE_URL=$ZipUrl
+RELEASES_URL=$ReleasesUrl
 VERSION=$releaseVersion
 CT_SUBDOMAIN=__CT_SUBDOMAIN__
 "@
