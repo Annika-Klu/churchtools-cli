@@ -15,6 +15,25 @@ function Test-PSVersion {
     }
 }
 
+function Test-CliVersion {
+    $latestRelease = Get-LatestRelease -ReleasesUrl $RELEASES_URL
+    $versionRegex = "(?<=^v)(\d+\.\d+\.\d+)"
+    if ($latestRelease.tag_name -match $versionRegex) {
+        $latestReleaseVersionStr = $matches[0]
+        $latestReleaseVersion = [Version] $latestReleaseVersionStr
+    } else {
+        Write-Warning "Keine Versionsangabe für den neuen Release gefunden."
+    }
+    if ($VERSION -match $versionRegex) {
+        $currentVersionStr = $matches[0]
+        $currentVersion = [Version] $currentVersionStr
+    }
+    if ($currentVersion -lt $latestReleaseVersion) {
+        Out-Message "Churchtools-CLI $($latestRelease.tag_name) ist jetzt verfügbar."
+        Out-Message "Deine Version ist $VERSION. Führe 'ct update' aus, um sie zu aktualisieren."
+    }
+}
+
 $initFile = Join-Path $PWD "init"
 
 try {
@@ -25,6 +44,7 @@ try {
     }
     Set-Encoding
     Test-PSVersion
+    Test-CliVersion
 } catch {
     $log.Write("ERROR in preflight/run.ps1: UTF-8 encoding could not be set: $($_.Exception.Message)")
 }
