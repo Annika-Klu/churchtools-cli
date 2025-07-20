@@ -40,8 +40,7 @@ function Get-CLICode {
         }
         Invoke-WebRequest -Uri $cliAsset.browser_download_url -OutFile $ZipFile -UseBasicParsing
     } catch {
-        [Microsoft.VisualBasic.Interaction]::MsgBox("Fehler beim Herunterladen der ZIP-Datei: $_", "OKOnly,Critical", "Download-Fehler")
-        exit 1
+        throw "ZIP-Datei konnte nicht heruntergeladen werden: $_"
     }
     Expand-Archive -Path $ZipFile -DestinationPath $InstallPath -Force
     Remove-Item $ZipFile -Force
