@@ -12,7 +12,7 @@ $initFile = Join-Path $PSScriptRoot "init"
 $envPath = Join-Path $PSScriptRoot ".env"
 
 function Use-MentionHelp {
-    Write-Host "Mit 'ct hilfe' kannst du verfügbare Befehle anzeigen lassen."  -ForegroundColor Blue
+    Write-Host "Mit 'ct hilfe' kannst du eine Liste aller Befehle anzeigen lassen."  -ForegroundColor Blue
 }
 
 try {

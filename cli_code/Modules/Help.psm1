@@ -4,7 +4,7 @@ function Write-Line {
 }
 
 function Show-Help {
-    Write-Host "`nBenutze das CLI, indem du 'ct <befehl>' eingibst und mit Enter bestätigst.`nWähle einen der folgenden Befehle:`n" -ForegroundColor Yellow
+    Write-Host "`nListe der Befehle" -ForegroundColor Yellow
 
     $allowedCommands = Get-AllowedCommands
     $groups = $allowedCommands | Group-Object DirectoryName | Sort-Object Name
@@ -18,11 +18,11 @@ function Show-Help {
         $folderName = Split-Path $relativePath -Leaf
 
         if ($folderName -match "Commands") {
-            Write-Host "Allgemein" -ForegroundColor Yellow
+            Write-Host ("{0,-14} {1}" -f "Allgemein", "Verwendung: 'ct <befehl>'") -ForegroundColor Yellow
         } else {
-            Write-Host "$folderName" -ForegroundColor Yellow
+            Write-Host ("{0,-14} {1}" -f $folderName , "Verwendung: 'ct $folderName <befehl>'") -ForegroundColor Yellow
         }
-        Write-Host ("-" * 10) -ForegroundColor Yellow
+        Write-Host ("")
 
         $helpItems = foreach ($cmd in $group.Group | Sort-Object Name) {
             $name = $cmd.BaseName
