@@ -1,14 +1,11 @@
 function Out-Message {
     param (
         [string]$Message,
-        [ValidateSet('info', 'warning', 'error', 'debug')]
+        [ValidateSet('info', 'error', 'debug')]
         [string]$Type = 'info'
     )
 
     switch ($Type) {
-        'warning' {
-            Write-Host $Message -ForegroundColor Yellow
-        }
         'info' {
             Write-Host $Message -ForegroundColor Green
         }
@@ -23,7 +20,7 @@ function Out-Message {
 
 function Out-Line {
         param (
-        [ValidateSet('info', 'warning', 'error', 'debug')]
+        [ValidateSet('info', 'error', 'debug')]
         [string]$Type = 'info'
     )
     Write-Host ""
@@ -31,9 +28,6 @@ function Out-Line {
     $width = $Host.UI.RawUI.WindowSize.Width
     $Message = ("_" * $width)
     switch ($Type) {
-        'warning' {
-            Write-Host $Message -ForegroundColor Yellow
-        }
         'info' {
             Write-Host $Message -ForegroundColor Green
         }
@@ -46,3 +40,5 @@ function Out-Line {
     }
     Write-Host ""
 }
+
+Export-ModuleMember -Function Out-Message, Out-Line
