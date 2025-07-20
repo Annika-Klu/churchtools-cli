@@ -8,19 +8,11 @@ Set-Location -Path $PSScriptRoot
 
 . "$PSScriptRoot/preflight/run.ps1"
 
-$initFile = Join-Path $PSScriptRoot "init"
-
 function Use-MentionHelp {
     Out-Message "Mit 'ct hilfe' kannst du eine Liste aller Befehle anzeigen lassen."
 }
 
 try {
-    if (Test-Path $initFile) {
-        Set-CliEnv -EnvPath $envPath
-        Remove-Item $initFile -ErrorAction SilentlyContinue
-        Get-DotEnv
-    }
-
     if (-not $Command) {
         Out-Message "Bitte Befehl eingeben und mit der Eingabetaste bestätigen."
         Use-MentionHelp

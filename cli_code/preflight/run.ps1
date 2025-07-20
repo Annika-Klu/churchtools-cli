@@ -15,7 +15,14 @@ function Test-PSVersion {
     }
 }
 
+$initFile = Join-Path $PWD "init"
+
 try {
+    if (Test-Path $initFile) {
+        Set-CliEnv
+        Remove-Item $initFile -ErrorAction SilentlyContinue
+        Get-DotEnv
+    }
     Set-Encoding
     Test-PSVersion
 } catch {

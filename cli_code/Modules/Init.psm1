@@ -75,9 +75,6 @@ Für die Ersteinrichtung brauchst du dein Churchtools-Login-Token. Um es zu find
 "@
 
 function Set-CliEnv {
-    param(
-        [string]$EnvPath
-    )
     Out-Line
     Out-Message  "Willkommen zum Churchtools-CLI!"
     Out-Line
