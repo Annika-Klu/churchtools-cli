@@ -1,4 +1,3 @@
-
 . "$PSScriptRoot/loadClassesAndModules.ps1"
 . "$PSScriptRoot/installRequirements.ps1"
 
