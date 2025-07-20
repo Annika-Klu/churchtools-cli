@@ -22,6 +22,12 @@ jobs:
     runs-on: windows-latest
 
     steps:
+      - name: Print env vars
+        shell: pwsh
+        run: |
+          Write-Host "Env vars set:"
+          Get-ChildItem Env:
+
       - name: Checkout private repo
         uses: actions/checkout@v3
         with:
@@ -34,7 +40,7 @@ jobs:
           $script = $template -replace '__RELEASES_URL__', $env:RELEASES_URL `
                               -replace '__RELEASE_TAG__', $env:RELEASE_TAG `
                               -replace '__CT_SUBDOMAIN__', $env:CT_SUBDOMAIN
-          $script | Set-Content installer/installer.ps1 -Encoding UTF8NoBOM
+          $script | Set-Content installer/installer.ps1 -Encoding UTF8
 
       - name: Create Inno Setup script from template
         working-directory: installer

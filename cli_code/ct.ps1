@@ -3,18 +3,27 @@ param (
     [string[]]$Args
 )
 
-. "$PSScriptRoot/preflight/run.ps1"
-
-$initFile = Join-Path $PSScriptRoot "init"
-if (Test-Path $initFile) {
-    Set-CliEnv -EnvPath $envPath
-    Remove-Item $initFile -ErrorAction SilentlyContinue
-    Get-DotEnv -Path $envPath
+$InstallPath = "$env:USERPROFILE\.ct"
+if (-not (Test-Path $InstallPath)) {
+    Write-Host "Installation wurde nicht gefunden."
+    exit 1
 }
 
+Set-Location -Path $InstallPath
+
+. "$InstallPath/preflight/run.ps1"
+
+$initFile = Join-Path $InstallPath "init"
+$envPath = Join-Path $InstallPath ".env"
+
 try {
-    $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
-    $commandsDir = Join-Path $scriptDir "Commands"
+    if (Test-Path $initFile) {
+        Set-CliEnv -EnvPath $envPath
+        Remove-Item $initFile -ErrorAction SilentlyContinue
+        Get-DotEnv -Path $envPath
+    }
+
+    $commandsDir = Join-Path $InstallPath "Commands"
 
     if (-not $Command) {
         Write-Host "Kein Befehl angegeben. Benutzung:`nct <Befehl>`nDann mit der Eingabetaste bestätigen."

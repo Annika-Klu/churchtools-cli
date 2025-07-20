@@ -2,7 +2,7 @@ function Get-AllowedCommands {
     $allowedCommands = @()
     $ct = [ChurchTools]::new($CT_API_URL, $CT_API_TOKEN)
 
-    Get-ChildItem -Path "$PSScriptRoot\..\Commands" -Filter *.ps1 -Recurse | ForEach-Object {
+    Get-ChildItem -Path "$PWD\Commands" -Filter *.ps1 -Recurse | ForEach-Object {
         $commandFile = $_.FullName
         $accessFile = Join-Path $_.Directory.FullName ".access"
 
