@@ -26,11 +26,11 @@ function Test-CliVersion {
     }
     if ($VERSION -match $versionRegex) {
         $currentVersionStr = $matches[0]
-        $currentVersion = [Version] $currentVersionStr
+        $currentVersion = [Version]$currentVersionStr
     }
     if ($currentVersion -lt $latestReleaseVersion) {
-        Out-Message "Churchtools-CLI $($latestRelease.tag_name) ist jetzt verfügbar."
-        Out-Message "Deine Version ist $VERSION. Führe 'ct update' aus, um sie zu aktualisieren."
+        Out-Message "[HINWEIS] Churchtools-CLI $($latestRelease.tag_name) ist jetzt verfügbar." warning
+        Out-Message "Deine Version ist $VERSION. Führe 'ct update' aus, um sie zu aktualisieren.`n" warning
     }
 }
 
@@ -46,5 +46,5 @@ try {
     Test-PSVersion
     Test-CliVersion
 } catch {
-    $log.Write("ERROR in preflight/run.ps1: UTF-8 encoding could not be set: $($_.Exception.Message)")
+    $log.Write("ERROR in preflight/run.ps1: $($_.Exception.Message)")
 }
