@@ -43,7 +43,7 @@ function Register-UpdateWorker {
         if (Test-Path $KeepDir) {
             Move-Item -Path "$KeepDir/*" -Destination $InstallPath -Force
         }
-        Remove-Item -Path $PSScriptRoot -Force -ErrorAction SilentlyContinue
+        Remove-Item -Path $PSScriptRoot -Recurse -Force -ErrorAction SilentlyContinue
         Write-Host "Update erfolgreich abgeschlossen. Die Befehle sind wieder wie gewohnt verfügbar." -ForegroundColor Green
     } catch {
         Write-Host $_.Exception.Message -ForegroundColor Red
