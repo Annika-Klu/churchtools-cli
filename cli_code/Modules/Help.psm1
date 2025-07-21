@@ -1,20 +1,20 @@
 function Show-Help {
-    Out-Message "`nListe der Befehle"
+    Out-Message "`nLISTE DER BEFEHLE"
 
     $allowedCommands = Get-AllowedCommands
     $groups = $allowedCommands | Group-Object DirectoryName | Sort-Object Name
 
     foreach ($group in $groups) {
-        Out-Line
+        Write-Host ""
         
         $relativePath = $group.Name -replace [regex]::Escape($PSScriptRoot), ''
         $relativePath = $relativePath.TrimStart('\','/')
         $folderName = Split-Path $relativePath -Leaf
 
         if ($folderName -match "Commands") {
-            Out-Message ("{0,-14} {1}" -f "Allgemein", "Verwendung: 'ct <befehl>'")
+            Out-Message ("{0,-14} {1}" -f "[Allgemein]", "Verwendung: 'ct <befehl>'`n")
         } else {
-            Out-Message ("{0,-14} {1}" -f $folderName , "Verwendung: 'ct $folderName <befehl>'")
+            Out-Message ("{0,-14} {1}" -f "[$folderName]" , "Verwendung: 'ct $folderName <befehl>'`n")
         }
 
         $helpItems = foreach ($cmd in $group.Group | Sort-Object Name) {
