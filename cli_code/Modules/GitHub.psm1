@@ -2,7 +2,11 @@ function Get-LatestRelease {
     param(
         [string]$ReleasesUrl
     )
-    $response = Invoke-WebRequest -Uri $ReleasesUrl
+    try {
+        $response = Invoke-WebRequest -Uri $ReleasesUrl
+    } catch {
+        throw "Letzter Release konnte nicht abgefragt werden: $_"
+    }
     $releases = $response.Content | ConvertFrom-Json
     if ($releases.Count -eq 0) {
         throw "Kein Release gefunden."
