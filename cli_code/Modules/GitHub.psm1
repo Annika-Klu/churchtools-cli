@@ -1,9 +1,11 @@
+$GitHubHeaders = @{ Authorization = "Bearer $GH_TOKEN" }
+
 function Get-LatestRelease {
     param(
         [string]$ReleasesUrl
     )
     try {
-        $response = Invoke-WebRequest -Uri $ReleasesUrl -Headers @{ Authorization = "Bearer $GH_TOKEN" }
+        $response = Invoke-WebRequest -Uri $ReleasesUrl -Headers $GitHubHeaders
     } catch {
         throw "Letzter Release konnte nicht abgefragt werden: $_"
     }
@@ -20,7 +22,7 @@ function Get-ReleaseAsset {
         [PSObject]$Release,
         [string]$AssetName
     )
-    $assetsResponse = Invoke-WebRequest -Uri $Release.assets_url
+    $assetsResponse = Invoke-WebRequest -Uri $Release.assets_url -Headers $GitHubHeaders
     $assets = $assetsResponse.Content | ConvertFrom-Json
     if ($assets.Count -eq 0) {
         throw "Keine Assets für Release $($Release.tag_name) gefunden."
