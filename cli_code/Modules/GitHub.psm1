@@ -3,7 +3,7 @@ function Get-LatestRelease {
         [string]$ReleasesUrl
     )
     try {
-        $response = Invoke-WebRequest -Uri $ReleasesUrl
+        $response = Invoke-WebRequest -Uri $ReleasesUrl -Headers @{ Authorization = "Bearer $GH_TOKEN" }
     } catch {
         throw "Letzter Release konnte nicht abgefragt werden: $_"
     }

@@ -14,6 +14,7 @@ env:
   PUBLISHER_URL: ${{ vars.PUBLISHER_URL }}
   PUBLISHER_EMAIL: ${{ vars.PUBLISHER_EMAIL }}
   CT_SUBDOMAIN: ${{ vars.CT_SUBDOMAIN }}
+  GH_TOKEN_TO_CHECK_RELEASES: ${{ secrets.GH_TOKEN }}
   RELEASE_TAG: ${{ github.event.release.tag_name || 'v0.0.0' }}
 
 jobs:
@@ -39,7 +40,8 @@ jobs:
           $template = Get-Content installer/installer.template.ps1 -Raw -Encoding UTF8
           $script = $template -replace '__RELEASES_URL__', $env:RELEASES_URL `
                               -replace '__RELEASE_TAG__', $env:RELEASE_TAG `
-                              -replace '__CT_SUBDOMAIN__', $env:CT_SUBDOMAIN
+                              -replace '__CT_SUBDOMAIN__', $env:CT_SUBDOMAIN `
+                              - replace '__GH_TOKEN__', $env:GH_TOKEN_TO_CHECK_RELEASES
           $script | Set-Content installer/installer.ps1 -Encoding UTF8
 
       - name: Create Inno Setup script from template

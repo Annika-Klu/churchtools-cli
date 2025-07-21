@@ -51,6 +51,7 @@ function Write-EnvFile {
 RELEASES_URL=$ReleasesUrl
 VERSION=$releaseVersion
 CT_SUBDOMAIN=__CT_SUBDOMAIN__
+GH_TOKEN=__GH_TOKEN__
 "@
     Set-Content -Path $EnvFile -Value $content -Encoding UTF8
 }
