@@ -1,18 +1,21 @@
 function Out-Message {
     param (
         [string]$Message,
-        [ValidateSet('info', 'error', 'debug')]
-        [string]$Type = 'info'
+        [ValidateSet("info", "warning", "error", "debug")]
+        [string]$Type = "info"
     )
 
     switch ($Type) {
-        'info' {
+        "info" {
             Write-Host $Message -ForegroundColor Green
         }
-        'error' {
+        "warning" {
+            Write-Host $Message -ForegroundColor Yellow
+        }
+        "error" {
             Write-Host $Message -ForegroundColor Red
         }
-        'debug' {
+        "debug" {
             Write-Host $Message -ForegroundColor White
         }
     }
@@ -20,21 +23,21 @@ function Out-Message {
 
 function Out-Line {
         param (
-        [ValidateSet('info', 'error', 'debug')]
-        [string]$Type = 'info'
+        [ValidateSet("info", "error", "debug")]
+        [string]$Type = "info"
     )
     Write-Host ""
 
     $width = $Host.UI.RawUI.WindowSize.Width
     $Message = ("_" * $width)
     switch ($Type) {
-        'info' {
+        "info" {
             Write-Host $Message -ForegroundColor Green
         }
-        'error' {
+        "error" {
             Write-Host $Message -ForegroundColor Red
         }
-        'debug' {
+        "debug" {
             Write-Host $Message -ForegroundColor White
         }
     }
