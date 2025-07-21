@@ -20,7 +20,7 @@ function Invoke-UpdateBootstrap {
     $latestRelease = Get-LatestRelease -ReleasesUrl $RELEASES_URL
     $cliCode = Get-ReleaseAsset -Release $latestRelease -AssetName "ct-cli.zip"
     $NewCodeZipFile = Join-Path $TempDir "ct-cli.zip"
-    Invoke-WebRequest -Uri cliCode.browser_download_url -OutFile $NewCodeZipFile -UseBasicParsing -Headers $GitHubHeaders
+    Invoke-WebRequest -Uri $cliCode.browser_download_url -OutFile $NewCodeZipFile -UseBasicParsing -Headers $GitHubHeaders
     Out-Message "Bereite Update-Skript vor..."
     $TempUpdateFilePath = Join-Path $TempDir "update.ps1"
     $FunctionContent = (Get-Command 'Register-UpdateWorker').Definition
