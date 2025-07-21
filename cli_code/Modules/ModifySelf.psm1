@@ -21,6 +21,7 @@ function Invoke-UpdateBootstrap {
     $cliCode = Get-ReleaseAsset -Release $latestRelease -AssetName "ct-cli.zip"
     $NewCodeZipFile = Join-Path $TempDir "ct-cli.zip"
     Invoke-WebRequest -Uri $cliCode.browser_download_url -OutFile $NewCodeZipFile -UseBasicParsing -Headers $GitHubHeaders
+    
     Out-Message "Bereite Update-Skript vor..."
     $TempUpdateFilePath = Join-Path $TempDir "update.ps1"
     $FunctionContent = (Get-Command 'Register-UpdateWorker').Definition
@@ -38,13 +39,12 @@ function Register-UpdateWorker {
         Write-Host "Extrahiere neuen Code ins Zielverzeichnis..."
         Expand-Archive -Path (Join-Path $PSScriptRoot "ct-cli.zip") -DestinationPath $InstallPath -Force
         Write-Host "Stelle gesicherte Dateien wieder her..."
-        $KeepDir = Join-Path $PWD "keep"
+        $KeepDir = Join-Path $PSScriptRoot "keep"
         if (Test-Path $KeepDir) {
             Move-Item -Path "$KeepDir/*" -Destination $InstallPath -Force
         }
+        Remove-Item -Path $PSScriptRoot -Force -ErrorAction SilentlyContinue
         Write-Host "Update erfolgreich abgeschlossen. Die Befehle sind wieder wie gewohnt verfügbar." -ForegroundColor Green
-        $SelfPath = $MyInvocation.MyCommand.Definition
-        Remove-Item -Path $SelfPath -Force -ErrorAction SilentlyContinue
     } catch {
         Write-Host $_.Exception.Message -ForegroundColor Red
     }
