@@ -1,11 +1,11 @@
 [Setup]
-AppName=CT CLI Installer
+AppName=BGH CLI Installer
 AppVersion=__RELEASE_TAG__
-DefaultDirName={userappdata}\..\ .ct
+DefaultDirName={userappdata}\..\ .bgh
 DisableDirPage=yes
-DefaultGroupName=CTCLI
+DefaultGroupName=BGHCLI
 OutputDir=.
-OutputBaseFilename=ct-cli-installer
+OutputBaseFilename=bgh-cli-installer
 Compression=lzma
 SolidCompression=yes
 SetupIconFile=icon.ico
@@ -21,4 +21,4 @@ Source: "icon.ico"; DestDir: "{tmp}"; Flags: deleteafterinstall
 Filename: "powershell.exe"; Parameters: "-ExecutionPolicy Bypass -NoLogo -NoProfile -WindowStyle Hidden -File ""{tmp}\installer.ps1"""; StatusMsg: "CLI wird installiert..."; Flags: runhidden
 
 [Icons]
-Name: "{group}\Churchtools CLI starten"; Filename: "powershell.exe"; Parameters: "-NoLogo -NoProfile -Command ct hilfe"
+Name: "{group}\BGH-CLI starten"; Filename: "powershell.exe"; Parameters: "-NoLogo -NoProfile -Command bgh hilfe"
