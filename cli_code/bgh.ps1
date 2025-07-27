@@ -9,7 +9,7 @@ Set-Location -Path $PSScriptRoot
 . "$PSScriptRoot/preflight/run.ps1"
 
 function Use-MentionHelp {
-    Out-Message "Mit 'ct hilfe' kannst du eine Liste aller Befehle anzeigen lassen."
+    Out-Message "Mit 'bgh hilfe' kannst du eine Liste aller Befehle anzeigen lassen."
 }
 
 try {
@@ -51,5 +51,5 @@ try {
     exit 0
 } catch {
     Out-Message $_ error
-    $log.Write("Error in ct.ps1 $($_.Exception.Message)")
+    $log.Write("Error in bgh.ps1 $($_.Exception.Message)")
 }
