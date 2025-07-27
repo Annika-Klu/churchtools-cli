@@ -29,8 +29,8 @@ function Test-CliVersion {
         $currentVersion = [Version]$currentVersionStr
     }
     if ($currentVersion -lt $latestReleaseVersion) {
-        Out-Message "[HINWEIS] Churchtools-CLI $($latestRelease.tag_name) ist jetzt verfügbar." warning
-        Out-Message "Deine Version ist $VERSION. Führe 'ct update' aus, um sie zu aktualisieren.`n" warning
+        Out-Message "[HINWEIS] BGH-CLI $($latestRelease.tag_name) ist jetzt verfügbar." warning
+        Out-Message "Deine Version ist $VERSION. Führe 'bgh update' aus, um sie zu aktualisieren.`n" warning
     }
 }
 

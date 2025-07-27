@@ -76,7 +76,7 @@ Für die Ersteinrichtung brauchst du dein Churchtools-Login-Token. Um es zu find
 
 function Set-CliEnv {
     Out-Line
-    Out-Message  "Willkommen zum Churchtools-CLI!"
+    Out-Message  "Willkommen zum BGH-CLI!"
     Out-Line
     Out-Message  $initialSetupInfo
     Out-Line
