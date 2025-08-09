@@ -13,8 +13,6 @@ function Get-DotEnv {
     }
 }
 
-Export-ModuleMember -Function Get-DotEnv
-
 function Update-DotEnv {
     param(
         [hashtable]$KeyValuePairs
@@ -46,4 +44,4 @@ function Update-DotEnv {
     $envContent | Set-Content -Path $EnvPath -Encoding UTF8
 }
 
-Export-ModuleMember -Function Update-DotEnv
+Export-ModuleMember -Function Get-Dotenv, Update-DotEnv

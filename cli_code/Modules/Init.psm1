@@ -37,7 +37,7 @@ function Set-ApiToken {
         try {
             Write-Host ""
             $token = Read-Host "Bitte gib dein Login-Token ein"
-            $ct = [ChurchTools]::new($ApiUrl, $token)
+            $ct = [ChurchTools]::new($ApiUrl)
             Out-Message "Authentifiziert als $($ct.User.firstName) $($ct.User.lastName)"
             $isValid = $true
         } catch {
@@ -82,7 +82,8 @@ function Set-CliEnv {
     Out-Line
     $envVars = @{}
     $envVars["CT_API_URL"] = Set-ApiUrl
-    $envVars["CT_API_TOKEN"] = Set-ApiToken -ApiUrl $envVars["CT_API_URL"]
+    $apiToken = Set-ApiToken -ApiUrl $envVars["CT_API_URL"]
+    Save-EncryptedToken -Token $apiToken -Path (Join-Path $PWD "ctlogintoken.sec")
     $envVars["OUT_DIR"] = Set-OutDir
     Update-DotEnv -KeyValuePairs $envVars
     Out-Message "Danke für deine Angaben! Das CLI ist jetzt fertig konfiguriert."
