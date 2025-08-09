@@ -4,8 +4,10 @@ class ChurchTools {
     [pscustomobject]$User
     [string]$CachePath
 
-    ChurchTools([string]$baseUrl, [string]$token) {
-        $this.BaseUrl = $baseUrl
+    ChurchTools([string]$apiUrl) {
+        $this.BaseUrl = $apiUrl
+        $tokenPath = Join-Path $PWD "ctlogintoken.sec"
+        $token = Get-EncryptedToken -Path $tokenPath -AsPlainText
         $this.Headers = @{ Authorization = "Login $($token)" }
         $this.CachePath = "$PSScriptRoot\..\.usercache.json"
         $this.LoadUserData()

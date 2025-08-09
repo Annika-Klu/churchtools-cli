@@ -2,10 +2,10 @@ Add-Type -AssemblyName Microsoft.VisualBasic
 
 $releaseVersion = "__RELEASE_TAG__"
 $ReleasesUrl = "__RELEASES_URL__"
-$ZipFile = "$env:TEMP\ct.zip"
-$InstallPath = "$env:USERPROFILE\.ct"
-$MainPS1File = Join-Path $InstallPath "ct.ps1"
-$CmdShim = Join-Path $env:USERPROFILE "AppData\Local\Microsoft\WindowsApps\ct.cmd"
+$ZipFile = "$env:TEMP\bgh.zip"
+$InstallPath = "$env:USERPROFILE\.bgh"
+$MainPS1File = Join-Path $InstallPath "bgh.ps1"
+$CmdShim = Join-Path $env:USERPROFILE "AppData\Local\Microsoft\WindowsApps\bgh.cmd"
 $EnvFile = Join-Path $InstallPath ".env"
 
 function Get-GitHubModule {
@@ -32,7 +32,7 @@ function Assert-Compatibility {
 function Get-CLICode {
     try {
         $latestRelease = Get-LatestRelease -ReleasesUrl $ReleasesUrl
-        $cliCode = Get-ReleaseAsset -Release $latestRelease -AssetName "ct-cli.zip"
+        $cliCode = Get-ReleaseAsset -Release $latestRelease -AssetName "bgh-cli.zip"
         Invoke-WebRequest -Uri $cliCode.browser_download_url -OutFile $ZipFile -UseBasicParsing
     } catch {
         throw "ZIP-Datei konnte nicht heruntergeladen werden: $_"
@@ -87,7 +87,7 @@ try {
 
     Remove-Item $moduleFilePath -Force
     [Microsoft.VisualBasic.Interaction]::MsgBox(
-        "ChurchTools CLI wurde erfolgreich installiert.`n`nDu kannst jetzt in PowerShell den Befehl `ct hilfe` verwenden.",
+        "BGH-CLI wurde erfolgreich installiert.`nDu kannst jetzt in PowerShell den Befehl 'bgh hilfe' verwenden.",
         "OKOnly,Information",
         "Installation abgeschlossen"
     )
