@@ -18,10 +18,7 @@ function Update-DotEnv {
         [hashtable]$KeyValuePairs
     )
 
-    $envContent = Get-Content $EnvPath
-    if (-not $envContent) {
-        $envContent = @()
-    }
+    $envContent = @(Get-Content -Path $EnvPath -ErrorAction SilentlyContinue)
 
     foreach ($key in $KeyValuePairs.Keys) {
         $value = $KeyValuePairs[$key]
@@ -41,7 +38,7 @@ function Update-DotEnv {
         }
     }
 
-    $envContent | Set-Content -Path $EnvPath -Encoding UTF8
+    $envContent | Out-File -FilePath $EnvPath -Encoding utf8 -NoNewline:$false
 }
 
 Export-ModuleMember -Function Get-Dotenv, Update-DotEnv
