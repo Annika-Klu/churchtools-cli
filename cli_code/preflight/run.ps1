@@ -33,11 +33,9 @@ function Test-CliVersion {
 }
 
 $initFile = Join-Path $PWD "init"
-$envFile = Join-Path $PWD ".env"
 
 try {
     if (Test-Path $initFile) {
-        New-Item -ItemType File -Path $envFile | Out-Null
         Set-CliEnv
         Remove-Item $initFile -ErrorAction SilentlyContinue
     }
