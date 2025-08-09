@@ -4,8 +4,8 @@ class ChurchTools {
     [pscustomobject]$User
     [string]$CachePath
 
-    ChurchTools() {
-        $this.BaseUrl = $CT_API_URL
+    ChurchTools([string]$apiUrl) {
+        $this.BaseUrl = $apiUrl
         $tokenPath = Join-Path $PWD "ctlogintoken.sec"
         $token = Get-EncryptedToken -Path $tokenPath -AsPlainText
         $this.Headers = @{ Authorization = "Login $($token)" }

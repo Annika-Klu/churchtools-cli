@@ -1,6 +1,6 @@
 function Get-AllowedCommands {
     $allowedCommands = @()
-    $ct = [ChurchTools]::new()
+    $ct = [ChurchTools]::new($CT_API_URL)
 
     Get-ChildItem -Path "$PWD\Commands" -Filter *.ps1 -Recurse | ForEach-Object {
         $commandFile = $_.FullName

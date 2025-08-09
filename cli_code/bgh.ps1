@@ -40,7 +40,7 @@ try {
     }
 
     $allowedCommands = Get-AllowedCommands
-    $ct = [ChurchTools]::new()
+    $ct = [ChurchTools]::new($CT_API_URL)
 
     if ($allowedCommands.FullName -notcontains $commandPath) {
         Out-Message "Du bist nicht berechtigt, diesen Befehl auszuführen." -Type error

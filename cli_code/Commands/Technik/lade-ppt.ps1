@@ -1,4 +1,4 @@
-$ct = [ChurchTools]::new()
+$ct = [ChurchTools]::new($CT_API_URL)
 $toast = [Toast]::new()
 
 function Get-PowerPoint {
