@@ -36,6 +36,7 @@ $initFile = Join-Path $PWD "init"
 
 try {
     if (Test-Path $initFile) {
+        Get-DotEnv
         Set-CliEnv
         Remove-Item $initFile -ErrorAction SilentlyContinue
     }
