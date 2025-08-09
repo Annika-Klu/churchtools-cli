@@ -29,14 +29,15 @@ function Set-ApiUrl {
     return "$churchUrl/api"
 }
 
-function Set-ApiToken {
+function Save-ApiToken {
     param(
         [string]$ApiUrl
     )
     do {
         try {
             Write-Host ""
-            $token = Read-Host "Bitte gib dein Login-Token ein"
+            $pastedToken = Read-Host "Bitte gib dein Login-Token ein"
+            Save-EncryptedToken -Token $pastedToken -Path (Join-Path $PWD "ctlogintoken.sec")
             $ct = [ChurchTools]::new($ApiUrl)
             Out-Message "Authentifiziert als $($ct.User.firstName) $($ct.User.lastName)"
             $isValid = $true
@@ -45,7 +46,6 @@ function Set-ApiToken {
             $isValid = $false
         }
     } until ($isValid)
-    return $token
 }
 
 function Set-OutDir {
@@ -82,8 +82,7 @@ function Set-CliEnv {
     Out-Line
     $envVars = @{}
     $envVars["CT_API_URL"] = Set-ApiUrl
-    $apiToken = Set-ApiToken -ApiUrl $envVars["CT_API_URL"]
-    Save-EncryptedToken -Token $apiToken -Path (Join-Path $PWD "ctlogintoken.sec")
+    Save-ApiToken -ApiUrl $envVars["CT_API_URL"]
     $envVars["OUT_DIR"] = Set-OutDir
     Update-DotEnv -KeyValuePairs $envVars
     Out-Message "Danke für deine Angaben! Das CLI ist jetzt fertig konfiguriert."

@@ -9,7 +9,6 @@ class ChurchTools {
         $tokenPath = Join-Path $PWD "ctlogintoken.sec"
         $token = Get-EncryptedToken -Path $tokenPath -AsPlainText
         $this.Headers = @{ Authorization = "Login $($token)" }
-        Write-Host $this.Headers
         $this.CachePath = "$PSScriptRoot\..\.usercache.json"
         $this.LoadUserData()
     }
